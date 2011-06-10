@@ -6,7 +6,7 @@
     <h1 class="help">Repo</h1>
         <h2 class="help">Overview</h2>
         <p class="help">
-            The ECSCM-Repo plugin allows ElectricCommander to communicate with your Repo, to download git repositories. This plugin enables you to perform code checkout, preflight actions, and continuous integration.
+            The ECSCM-Repo plugin allows ElectricCommander to communicate with your Repo, to download Git repositories. This plugin enables you to perform code checkout, preflight actions, and continuous integration.
         </p>
         <p class="help">
             <b>Note:</b> Repo must be installed and must be accessible from the command line.
@@ -14,7 +14,7 @@
     
         <p class="help">
                     <b>Supported tool version</b><br/>
-                    This plugin was developed and tested with Repo version 1.7.4.3
+                    This plugin was developed and tested with Repo version 1.7.4.3.
                 </p>
     
             <h2 class="help">Configuration</h2>
@@ -24,9 +24,9 @@
              <ul>
 				<li><b>Configuration Name</b> - Provide a unique name for the configuration, keeping in mind that you may need to create additional configurations over time.</li>
                 <li><b>Description</b> - You can supply a text description for your reference only. Commander does not use this information.</li>
-                <li><b>Manifest repository URL</b> - The url from which to retrieve a manifest repository. For the Android project is git://android.git.kernel.org/platform/manifest.git</li>
-				<li><b>Manifest</b>- The manifest file within the repository defined in the previous field. If no manifest name is selected, the default is default.xml</li>
-				<li><b>Mirroring the repositories</b> - This option let you create a local mirror of the repositories. </li>
+                <li><b>Manifest repository URL</b> - The url from which to retrieve a manifest repository. For the Android project it is git://android.git.kernel.org/platform/manifest.git</li>
+				<li><b>Manifest</b> - The manifest file within the repository defined in the previous field. If no manifest name is selected, the default is default.xml</li>
+				<li><b>Mirror the repositories</b> - Select this option to create a local mirror of the repositories. </li>
             </ul>
             
     
@@ -41,24 +41,24 @@
             <h3 class="help">Source Control Management Checkout</h3>
             <ul>
                     <li><b>dest</b> - Indicate the path relative to the job's workspace where the source tree will be created.</li>
-                    <li><b>RepoAgentPath</b> - Check it if you created a property called "repo_working_dir" in the resource to avoid downloading the entire repository each time.</li>
-                    <li><b>RepoProjectList</b> - Use it to specify a list of projects to be downloaded.</li>
-                    <li><b>RepoBranch</b> - The git branch to fetch from repo.</li>
+                    <li><b>RepoAgentPath</b> - Select this option if you created a property called "repo_working_dir" in the resource to avoid downloading the entire repository each time.</li>
+                    <li><b>RepoProjectList</b> - Specify a list of projects to be downloaded.</li>
+                    <li><b>RepoBranch</b> - Specify the git branch to fetch from repo.</li>
             </ul>
         <p></p>
         
         <h3 class="help">Source Control Management Preflight</h3>
             <ul>
-                    <li><b>repoworkdir</b> - Path to the developer working directory.</li>
-                    <li><b>agentworkdir</b> - Path to the source directory used by the agent.</li>
-                    <li><b>RepoBranch</b> - The git branch to fetch from repo.</li>
+                    <li><b>repoworkdir</b> - Supply the path to the developer working directory.</li>
+                    <li><b>agentworkdir</b> - Supply the path to the source directory used by the agent.</li>
+                    <li><b>RepoBranch</b> - Specify the git branch to fetch from repo.</li>
             </ul>
         <p></p>
         
         <h3 class="help">Source Control Management Sentry</h3>
             <ul>                    
-                    <li><b>RepoAgentPath</b> - Check it if you created a property called "repo_working_dir" in the resource to avoid downloading the entire repository each time.</li>
-                    <li><b>RepoBranch</b> - The git branch to watch.</li>
+                    <li><b>RepoAgentPath</b> - Select this option if you created a property called "repo_working_dir" in the resource to avoid downloading the entire repository each time.</li>
+                    <li><b>RepoBranch</b> - Indicate the git branch to watch.</li>
             </ul>
         <p></p>
     

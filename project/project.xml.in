@@ -312,7 +312,7 @@
               <propertyName>parameters</propertyName>
               <propertySheet>
                 <property>
-                  <propertyName>REPOMANIFEST</propertyName>
+                  <propertyName>RepoManifest</propertyName>
                   <propertySheet>
                     <property>
                       <propertyName>formType</propertyName>
@@ -322,7 +322,7 @@
                   </propertySheet>
                 </property>
                 <property>
-                  <propertyName>REPOMIRROR</propertyName>
+                  <propertyName>RepoMirror</propertyName>
                   <propertySheet>
                     <property>
                       <propertyName>checkedValue</propertyName>
@@ -347,7 +347,7 @@
                   </propertySheet>
                 </property>
                 <property>
-                  <propertyName>REPOURL</propertyName>
+                  <propertyName>RepoUrl</propertyName>
                   <propertySheet>
                     <property>
                       <propertyName>formType</propertyName>

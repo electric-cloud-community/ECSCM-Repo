@@ -19,7 +19,7 @@
         <type>checkbox</type>
 		<checkedValue>1</checkedValue>
 		<uncheckedValue>0</uncheckedValue>
-        <label>Mirroring the repositories:</label>
+        <label>Mirror the repositories:</label>
         <property>RepoMirror</property>
         <required>0</required>
     </formElement>    
