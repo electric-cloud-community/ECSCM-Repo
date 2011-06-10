@@ -1,0 +1,36 @@
+<editor>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration Name:</label>
+        <property>config</property>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>textarea</type>
+        <label>Description:</label>
+        <property>description</property>
+        <value>Repo configuration</value>
+    </formElement>
+	<formElement>
+        <type>entry</type>
+        <label>Manifest repository URL:</label>
+        <property>RepoUrl</property>
+        <required>1</required>
+    </formElement>
+	<formElement>
+        <type>entry</type>
+        <label>Manifest:</label>
+        <property>RepoManifest</property>
+		<value>manifest.xml</value>
+        <required>0</required>
+    </formElement>
+	<formElement>
+        <type>checkbox</type>
+		<checkedValue>1</checkedValue>
+		<uncheckedValue>0</uncheckedValue>
+        <label>Mirroring the repositories:</label>
+        <property>RepoMirror</property>
+        <required>0</required>
+    </formElement>    
+</editor>
+

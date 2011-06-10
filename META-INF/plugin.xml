@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+    <key>ECSCM-Repo</key>
+    <version>@PLUGIN_VERSION@</version>
+    <label>ECSCM-Repo</label>
+    <description>SCM Plugin for Repo</description>
+    <author>Electric Cloud</author>
+    <authorUrl>http://www.electric-cloud.com/support</authorUrl>
+    <category>Source Control</category>
+    <commander-version min="3.6"/>
+    <depends min="1.0.1">ECSCM</depends>
+	<help>help.xml</help>
+</plugin>

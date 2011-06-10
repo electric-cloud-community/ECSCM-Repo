@@ -1,0 +1,70 @@
+/* pluginhelp.css -
+ *
+ * This file defines styles used for displaying plugin documentation.
+ *
+ * Copyright (c) 2006-2010 Electric Cloud, Inc.
+ * All rights reserved
+ */
+
+.help {
+    font-family: Times New Roman, Times, serif;
+    font-size: 105%;
+    margin: 10px 10px 0px 20px;
+}
+
+
+.help h1 {
+    font-family: Tahoma, Helvetica, sans-serif;
+    font-size: 125%;
+    font-weight: bold;
+    color: #687291;
+}
+
+.help h2 {
+    font-family: Tahoma, Helvetica, sans-serif;
+    font-size: 115%;
+    font-weight: bold;
+    color: #000000;
+}
+
+.help h3 {
+    font-family: Tahoma, Helvetica, sans-serif;
+    font-size: 105%;
+    font-weight: bold;
+    color: #000000;
+}
+
+.help a {
+    color: #333333;
+    text-decoration: none;
+    padding: 1px;
+    background-image: url(../../lib/images/dottedBorder1.gif);
+    background-position: bottom;
+    background-repeat: repeat-x;
+}
+
+.help a:hover {
+    color: #CC6600;
+    background-image: url(../../lib/images/dottedBorder1Hover.gif);
+}
+
+.help ul li {
+    list-style-position: outside;
+    list-style-type: square;
+    padding-bottom: 5px;
+}
+
+.help dt {
+    font-family: Tahoma, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 80%;
+    padding-bottom: 2px;
+}
+
+.help dd {
+    padding-bottom: 8px;
+}
+
+.help pre {
+    font-size: 100%;
+}

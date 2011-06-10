@@ -1,0 +1,245 @@
+# -*-Perl-*-
+
+# repo.ntest -
+#
+# Exercise basic components of ECSCM-Repo plugin
+#
+# Copyright (c) 2005-2011 Electric Cloud, Inc.
+# All rights reserved
+
+use strict;
+
+# read in setup and tests that are common to all ECSCM plugin 
+# system tests
+my $commonFile =  "$::gTestFileDir/../../ECSCM/systemtest/ntest.common";
+open F, "< $commonFile";
+my $code = do { local $/; <F> };
+close F;
+eval  $code ;
+
+ntest "check-checkout-present", {}, sub {
+    # Check that the plugin contains required components
+    my $xpath = $::N->getSteps("$::gPlugin_name","CheckoutCode");
+    assertOK($xpath,"get steps");    
+    assertEq("checkoutMethod", $xpath->findvalue("//step[1]/stepName"), "step 1 is checkoutMethod");
+};
+
+ntest "check-getSCMTag-present", {}, sub {
+    my $xpath = $::N->getSteps("$::gPlugin_name","getSCMTag");
+    assertOK($xpath, "get steps");
+    assertEq("tagMethod", $xpath->findvalue("//step[1]/stepName"), "step 1 is getSCMTag");
+
+};
+
+ntest "check-Preflight-present", {}, sub {
+    my $xpath = $::N->getSteps("$::gPlugin_name","Preflight");
+    assertOK($xpath, "get steps");
+    assertEq("preflight", $xpath->findvalue("//step[1]/stepName"), "step 1 is preflight");
+
+};
+
+ntest "check-config code-present", {}, sub {
+    my $xpath = $::N->getProperty("/projects/$::gPlugin_name/scm_driver/$::gPlugin_driver" . "::Cfg");
+    assertOK($xpath,"get cfg property");
+    assertNe("", $xpath->findvalue("//value"), "Config Code");
+};
+
+ntest "check-driver code-present", {}, sub {
+    my $xpath = $::N->getProperty("/projects/$::gPlugin_name/scm_driver/$::gPlugin_driver" . "::Driver");
+    assertOK($xpath,"get driver property");
+};
+
+# Tests specific or customized to this SCM
+ntest "setup-import test project", {}, sub {
+    assertOK($::N->import(
+             { file =>"$::gTestFileDir/import.xml",
+               path  => "/projects/ECSCM Tests",
+               force => 1
+             } ), "import test project");
+    assertOK($::N->getProcedure("ECSCM Tests", "checkout"),"checkout procedure exists");
+};
+
+ntest "setup-create configuration", {}, sub {
+    my $xpath = $::N->runProcedure("$::gPlugin_name", 
+        { procedureName => "CreateConfiguration",
+          pollInterval  => '0.2',
+          timeout       => 600,
+          actualParameter => [ 
+            { actualParameterName => 'config', value => "test" }, 
+            { actualParameterName => 'description', value => "Repo config" }, 
+            { actualParameterName => 'RepoUrl', value => "git:\\gerrit\platform\manifest.git" }, 
+            { actualParameterName => 'RepoManifest', value => "default.xml" },            
+          ],          
+        });
+
+    assertOK($xpath, "run create configuration procedure");
+    # make sure it finished
+    my $jobId = 0;
+    my $status = "";
+    assertDef($xpath, "runProcedure finished without a timeout");
+    if ($xpath) {
+        $jobId  = $xpath->findvalue("//jobId");
+        $status = $xpath->findvalue("//status");
+
+        assertTrue($jobId && int($jobId) > 0,'valid job id');
+        assertEq('completed',$status,"job $jobId complete");
+
+        #abort if job did not finish
+        if ($status ne "completed") {
+            assertOK($::N->abortJob($jobId, {force => 1}));
+        }
+    }
+
+    # examine log files
+    $xpath = $::N->getJobDetails($jobId);
+
+    writeFile("$::gCurrentTestDir/createConfiguration.log","====Job Details====\n$xpath->{_xml}\n");
+
+    # check that the config and credential exist
+    $xpath = $::N->getProperty("/projects/$::ECSCM/scm_cfgs/test/scmPlugin");
+    assertEq("ECSCM-Repo",$xpath->findvalue("//value")->string_value,"config type");
+};
+
+#############################################################
+# Fake output commands
+#############################################################
+
+
+#############################################################
+# test-checkout-code: test if the checkout method
+#           present in the Drive
+#############################################################
+ntest "test checkout code", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/checkout.log`;
+    doSetup();
+ 
+     my $xpath = $::N->getActualParameters({projectName => "ECSCM Tests", procedureName => "checkout", stepName => "ECSCM-Repo Checkout"});
+     my $repoRevision =$xpath->findvalue("//actualParameter[actualParameterName='RepoRevision']/value");    
+     my $dest =$xpath->findvalue("//actualParameter[actualParameterName='dest']/value");
+    
+    
+    my ($cmd, $out, $err) = runFakeCmd("checkout",$repoRevision, $dest);
+    
+    assertEq('Log Command: repo  forall -c "git reset --hard"'
+            .'Log Command: repo  forall -c "git clean -xfd"'
+            .'Log Command: repo  sync 2>&1'
+            .'Log Command: repo  forall -c "git log --since="Thu, 09 Jun 2011 22:46:40 GMT"',
+        $cmd, "command misspelled");
+    assertDiff($::gFakeCmdOutput,$out, "no output");
+    assertEq(0, $err,"exit code was different than 0");
+};
+
+#############################################################
+# check-checkout-present: test if the checkout method
+#           present in the Drive
+#############################################################
+ntest "test preflight", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/preflight.log`;
+   
+    my ($cmd, $out, $err) = runFakeCmd("preflight", $::gFakeCmdOutput);
+     
+    my $expectedOutput = $::gFakeCmdOutput;            
+   
+    assertDiff($expectedOutput, $out, "no output");
+    assertEq(0, $err,"exit code was different than 0");
+};
+
+#############################################################
+# check-checkout-present: test if the checkout method
+#           present in the Drive
+#############################################################
+ntest "test getSCMTag", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getSCMTag.log`;
+        
+    my ($cmd, $out, $err) = runFakeCmd("getSCMTag", 'stcmd hist -is -x -p "testuser:testpassword@localhost:49201/ec-testproject');
+    my $expected = '2 Tuesday, September 7, 2010 9:00:17 AM';
+    
+    assertDiff('stcmd hist -is -x -p "testuser:testpassword@localhost:49201/ec-testproject',
+        $cmd, "command misspelled");
+    assertDiff($expected, $out, "no output");
+    assertEq(0, $err,"exit code was different than 0");
+};
+
+
+#############################################################
+# helper routines
+#############################################################
+
+#############################################################
+# importProject: imports a project from the xml file
+#############################################################
+sub importProject() {
+    assertOK($::N->import(
+             { file =>"$::gTestFileDir/import.xml",
+               path  => "/projects/ST Test Project",
+               force => 1
+             } ), "import test project");
+    assertOK($::N->getProcedure("ECSCM Tests", "checkout"), "repo checkout procedure doesn't exist");
+    $::gProjectImported = 1;
+}
+
+#############################################################
+# doSetup: imports a project if it was not done before
+#############################################################
+sub doSetup() {
+    if(! $::gProjectImported) {
+        importProject();
+    }
+}
+
+#############################################################
+# runFakeCmd: run a fake command. Use for testing
+#                                                           
+# cmdin - the command to run
+# input - the text to pipe into cmd (optional)
+#
+# returns
+#   exitstatus - exit code of command
+#   text       - stdout of command
+#############################################################
+sub runFakeCmd
+{
+    my ($fakeCmd, @opts) = @_;
+    my $cmd = "";
+
+    ## for test, if canned output is given, pop off
+    ## the next output block and return
+    if ("$::gFakeCmdOutput" eq "") {
+        # we ran out of fake output
+        return (99,"no more output");
+    }
+ 
+#$username, $password, $hostname,$endpoint,$projectName, $dest
+#stcmd co -is -nologo -x -p \"testuser:testpassword@localhost:49201/ec-testproject\" -rp src
+   if("checkout" eq $fakeCmd) {   
+        $cmd = 'Log Command: repo  forall -c "git reset --hard"'
+              .'Log Command: repo  forall -c "git clean -xfd"'
+              .'Log Command: repo  sync 2>&1'
+              .'Log Command: repo  forall -c "git log --since="Thu, 09 Jun 2011 22:46:40 GMT"';    
+    } 
+    elsif ("preflight" eq $fakeCmd) {
+        $cmd = 'tf status ' .
+               'tf properties ' . $opts[0] .
+               ' tf status ' .
+               'tf properties '. $opts[0] .
+               ' tf status ' .
+               'tf properties '. $opts[0] .
+               ' tf checkin /noprompt /comment:' . $opts[1];
+    }
+    elsif("getSCMTag") {
+        $cmd = 'stcmd hist -is -x -p "testuser:testpassword@localhost:49201/ec-testproject';       
+    }
+    
+    my $exitstatus = 0;    
+    return ($cmd,$::gFakeCmdOutput,$exitstatus);
+}
+
+1
+
+
+
+
+

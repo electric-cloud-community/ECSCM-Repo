@@ -1,0 +1,26 @@
+<editor>
+    <formElement>
+        <type>textarea</type>
+        <label>Description:</label>
+        <property>description</property>       
+    </formElement>
+	<formElement>
+        <type>entry</type>
+        <label>Manifest repository URL:</label>
+        <property>RepoUrl</property>
+        <required>1</required>
+    </formElement>
+	<formElement>
+        <type>entry</type>
+        <label>Manifest:</label>
+        <property>RepoManifest</property>		
+    </formElement>
+	<formElement>
+        <type>checkbox</type>
+		<checkedValue>1</checkedValue>
+		<uncheckedValue>0</uncheckedValue>
+        <label>Mirroring the repositories:</label>
+        <property>RepoMirror</property>
+        <required>0</required>
+    </formElement>    
+</editor>
