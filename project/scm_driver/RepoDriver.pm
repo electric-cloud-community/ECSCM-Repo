@@ -77,10 +77,13 @@ sub isImplemented {
 #------------------------------------------------------------------------------
 sub repo
 {
-    my ($self,$command, $opts) = @_;
+    my ($self,$command, $options) = @_;
     my $repoCommand = "repo $command";        
-    $self->RunCommand($repoCommand,
-            {LogCommand => 1, LogResult => 0});   
+	if ($options eq '') {
+	  $options = {LogCommand => 1, LogResult => 0}; 
+	}
+    my $out = $self->RunCommand($repoCommand, $options);           
+	return $out;
 }
 
 #------------------------------------------------------------------------------
@@ -189,7 +192,7 @@ sub getSCMTag {
        #$self->checkoutCode($opts);
     }    
     
-    $repoBranch = 'HEAD' unless ($RepoBranch ne "");
+    $repoBranch = 'master' unless ($RepoBranch eq "");
     $output = $self->repo(" forall -c \"git log -1 --pretty=format:%H@%ct%n $repoBranch --\"");
     
     my @out = split(/\n/, $output);
@@ -272,8 +275,9 @@ sub checkoutCode
             exit(1);
         }                         
     } else {        
-        $RepoBranch = 'HEAD' unless ($RepoBranch ne "");
-        $output = $self->repo(" forall -c \"git reset --hard\"");
+        $RepoBranch = 'm/'.$RepoBranch unless ($RepoBranch eq "");
+        $output = $self->repo(" forall -c \"git reset --hard $RepoBranch\"", 
+		 {LogCommand => 1, LogResult => 0, IgnoreError => 1});		
         $output = $self->repo(" forall -c \"git clean -xfd\"");
         
         $command = " sync 2>&1";
@@ -295,9 +299,11 @@ sub checkoutCode
         
                
     my $changelog = $self->repo(" forall -c \"git log --since=\"$changeLogs_since\"\"");
+	
+	my $snapshot = $self->repo(" forall -c \"git describe --always\""); 
         
        
-    $self->setPropertiesOnJob($scmKey, $now, $changelog);
+    $self->setPropertiesOnJob($scmKey, $snapshot, $changelog);
       
     chdir $here;
 
@@ -467,7 +473,12 @@ sub cpf_copyDeltas()
 #------------------------------------------------------------------------------
 sub cpf_autoCommit()
 {
-    return 1;
+    my ($self, $opts) = @_;
+
+    $self->cpf_display("Committing changes");
+    $self->RunCommand("repo upload", {LogCommand =>1});
+   
+    $self->cpf_display("Changes have been successfully submitted");
 }
 
 #------------------------------------------------------------------------------
