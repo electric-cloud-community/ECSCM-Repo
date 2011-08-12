@@ -25,3 +25,13 @@ if ($promoteAction eq 'promote') {
                                {projectName => $ecscmProj});
     }
 }
+
+# Data that drives the create step picker registration for this plugin.
+my $scm = "Repo";
+my %checkoutStep = (
+    label       => "$scm - Checkout",
+    procedure   => "CheckoutCode",
+    description => "Checkout code from $scm.",
+    category    => "SCM"
+);
+@::createStepPickerSteps = (\%checkoutStep);
