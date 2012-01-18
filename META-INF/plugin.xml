@@ -6,7 +6,7 @@
     <description>SCM Plugin for Repo</description>
     <author>Electric Cloud</author>
     <authorUrl>http://www.electric-cloud.com/support</authorUrl>
-    <category>Source Control</category>
+    <category>Source Code Management</category>
     <commander-version min="3.6"/>
     <depends min="1.0.1">ECSCM</depends>
 	<help>help.xml</help>

@@ -32,6 +32,6 @@ my %checkoutStep = (
     label       => "$scm - Checkout",
     procedure   => "CheckoutCode",
     description => "Checkout code from $scm.",
-    category    => "SCM"
+    category    => "Source Code Management"
 );
 @::createStepPickerSteps = (\%checkoutStep);
