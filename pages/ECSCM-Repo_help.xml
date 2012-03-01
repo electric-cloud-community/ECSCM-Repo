@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="generator"
+          content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org" />
+    <meta content="text/html; charset=us-ascii"
+          http-equiv="content-type" />
+
+    <title>Electric Commander Plugin for Repo</title>
+    <link rel="stylesheet"
+          href="../../plugins/@PLUGIN_KEY@/pluginhelp.css"
+          type="text/css"
+          media="screen" />
+</head>
+
+<body>
+    <div class="help">
+        <h1 class="pluginname">Repo</h1>
+
+        <p>Plugin Version @PLUGIN_VERSION@</p>
+        <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;"
+            noshade="noshade" />
+
+        <p>Repo is a tool that Google built on top of Git to manage
+        the many Git repositories, do the uploads to revision
+        control system, and automate parts of the Android
+        development workflow. Repo is not meant to replace Git,
+        only to make it easier to work with Git in the context of
+        Android. The repo command is an executable Python script
+        that can be put anywhere in the development system.</p>
+
+        <h2>Repo Links</h2>
+
+        <p>More information can be found at
+        <a href="http://source.android.com/source/version-control.html">
+        this website</a>.</p>
+
+        <h2>Electric Commander Integration to Repo</h2>
+
+        <p>allows ElectricCommander to communicate with your Repo,
+        to download Git repositories. This plugin enables you to
+        perform code checkout, preflight actions, and continuous
+        integration.</p>
+
+        <h2>Integrated Version</h2>
+
+        <p>This plugin was developed and tested against version
+        1.7.4.3.</p>
+
+        <h1>Plugin Procedures</h1>
+
+        <p>IMPORTANT: For all parameter descriptions below,
+        required parameters are shown in
+        <span class='required'>bold italics</span>.</p>
+
+        <h2>Plugin Configuration</h2>
+
+        <p>Plugin configurations are sets of parameters that apply
+        across some or all of the plugin's procedures. They are
+        intended to reduce repetition of common values, create
+        predefined sets of parameters for end users, and to
+        securely store credentials where needed. Each configuration
+        is given a unique name that is entered in designated
+        parameters on procedures that use them.<br />
+         Plugin configurations are created by going to the Electric
+        Commander "Administration" tab, then to the "Plugins"
+        sub-tab. On the right side of the line for the specific
+        plugin, there is a "Configure" link which will open the
+        Configuration page.</p>
+
+        <h3>Plugin Configuration Parameters</h3>
+
+        <table class="grid">
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+
+                    <th>Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td class='required'>Configuration Name</td>
+
+                    <td>Provide a unique name for the
+                    configuration. (Required)</td>
+                </tr>
+
+                <tr>
+                    <td>Description</td>
+
+                    <td>A custom description for the
+                    configuration.</td>
+                </tr>
+
+                <tr>
+                    <td class='required'>Manifest repository
+                    URL</td>
+
+                    <td>URL to the manifest repository.
+                    (Required)</td>
+                </tr>
+
+                <tr>
+                    <td>Manifest</td>
+
+                    <td>Select a manifest file within the
+                    repository. If no manifest name is selected,
+                    the default is default.xml</td>
+                </tr>
+
+                <tr>
+                    <td>Mirror the repositories</td>
+
+                    <td>Download the mirror of the
+                    repositories</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="CheckoutCode">
+            <a name='CheckoutCode'
+                 id="CheckoutCode"></a> 
+
+            <h3>CheckoutCode</h3>
+
+            <p>The CheckoutCode procedure downloads code from a git
+            repository and place it into a working directory using
+            the Repo tool.</p>
+
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+
+                        <th>Description</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td class='required'>Configuration</td>
+
+                        <td>The SCM configuration so use.
+                        (Required)</td>
+                    </tr>
+
+                    <tr>
+                        <td>Use agent path</td>
+
+                        <td>A path defined in custom resource
+                        property of a resource, where the source
+                        tree will be created.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Destination Directory</td>
+
+                        <td>A path relative to the job's workspace,
+                        where the source tree will be created.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Branch</td>
+
+                        <td>The Git branch to use.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Project list</td>
+
+                        <td>Project list</td>
+                    </tr>
+                </tbody>
+            </table><img src="../../plugins/@PLUGIN_KEY@/images/Repo-2.png"
+                 alt="form" />
+        </div>
+
+        <div id="Preflight (client side)">
+            <a name='Preflight (client side)'
+                 id="Preflight (client side)"></a> 
+
+            <h3>Preflight (client side)</h3>
+
+            <p>This will excecute the client part of the
+            preflight.</p>
+
+            <p>This parameters can be set in the .preflight file,
+            or passed directly to the ecclientpreflight tool.</p>
+
+            <h3>Preflight parameters</h3>
+
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+
+                        <th>Description</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>repoworkdir</td>
+
+                        <td>The developer's source directory.</td>
+                    </tr>
+
+                    <tr>
+                        <td>agentworkdir</td>
+
+                        <td>The path to the source directory used
+                        by the agent.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="Preflight (agent side)">
+            <a name='Preflight (agent side)'
+                 id="Preflight (agent side)"></a> 
+
+            <h3>Preflight (agent side)</h3>
+
+            <p>This will excecute the agent side part of the
+            preflight.</p>
+
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+
+                        <th>Description</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td class='required'>Configuration</td>
+
+                        <td>The SCM configuration so use.
+                        (Required)</td>
+                    </tr>
+
+                    <tr>
+                        <td>Destination Directory</td>
+
+                        <td>A path relative to the job's workspace,
+                        where the source tree will be created.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="getSCMTag">
+            <a name='getSCMTag'
+                 id="getSCMTag"></a> 
+
+            <h3>getSCMTag</h3>
+
+            <p>This procedure is used for Continuous Integration.
+            This will monitor the repository to discover whether
+            something changed, and trigger a preconfugured
+            procedure.</p>
+
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+
+                        <th>Description</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Branch</td>
+
+                        <td>The git branch to watch</td>
+                    </tr>
+
+                    <tr>
+                        <td>Use repo agent path</td>
+
+                        <td>Use repo agent path this avoids
+                        downloading the whole source code
+                        tree.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Quiet time minutes</td>
+
+                        <td>The number of minutes of no check-in
+                        activity required before launching the
+                        procedure.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Enabled for ElectricSentry</td>
+
+                        <td>Enable this schedule for
+                        ElectricSentry</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h1>Examples and Use Cases</h1>
+
+        <h2>Creating a
+        configuration</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-1.png"
+             alt="configuration" /> 
+
+        <h2>Configure a
+        checkout</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-2.png"
+             alt="checkout" /> 
+
+        <h2>Checkout
+        log</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-3.png"
+             alt="log" /> 
+
+        <h2>
+        Preflightt</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-4.png"
+             alt="Preflightt" /> 
+
+        <h2>
+        Sentry</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-5.png"
+             alt="Sentry" /> 
+
+        <h1>Release Notes</h1>
+
+        <h2>@PLUGIN_KEY@-2.0.0</h2>
+
+        <ul>
+            <li>XML parameter panels.</li>
+
+            <li>Help pages changes</li>
+        </ul>
+
+        <h2>@PLUGIN_KEY@-1.0.0</h2>
+
+        <ul>
+            <li>SCM features - Sentry</li>
+
+            <li>SCM features - Checkout</li>
+
+            <li>SCM features - Preflight</li>
+        </ul>
+    </div>
+</body>
+</html>

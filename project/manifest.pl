@@ -7,5 +7,7 @@
     ['//property[propertyName="trigger"]/value', 'scm_form/trigger.xml'],
     ['//property[propertyName="createConfig"]/value', 'scm_form/createConfig.xml'],
     ['//property[propertyName="editConfig"]/value', 'scm_form/editConfig.xml'],
-    ['//property[propertyName="ec_setup"]/value', 'ec_setup.pl'], 
+    ['//property[propertyName="ec_setup"]/value', 'ec_setup.pl'],
+    ['//procedure[procedureName="CheckoutCode"]/propertySheet/property[propertyName="ec_parameterForm"]/value', 'scm_form/checkout.xml'],
+    ['//procedure[procedureName="Preflight"]/propertySheet/property[propertyName="ec_parameterForm"]/value', 'scm_form/preflight.xml'],
 );

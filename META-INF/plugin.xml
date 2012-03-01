@@ -9,5 +9,5 @@
     <category>Source Code Management</category>
     <commander-version min="3.6"/>
     <depends min="1.0.1">ECSCM</depends>
-	<help>help.xml</help>
+	<help>@PLUGIN_KEY@_help.xml</help>
 </plugin>

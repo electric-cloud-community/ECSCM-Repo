@@ -29,9 +29,16 @@ if ($promoteAction eq 'promote') {
 # Data that drives the create step picker registration for this plugin.
 my $scm = "Repo";
 my %checkoutStep = (
-    label       => "$scm - Checkout",
+    label       => "@PLUGIN_KEY@ - Checkout",
     procedure   => "CheckoutCode",
     description => "Checkout code from $scm.",
     category    => "Source Code Management"
 );
-@::createStepPickerSteps = (\%checkoutStep);
+
+my %Preflight = (
+    label => "@PLUGIN_KEY@ - Preflight",
+    procedure => "Preflight",
+    description => "Checkout code from $scm. during Preflight",
+    category => "Source Code Management"
+);
+@::createStepPickerSteps = (\%checkoutStep, \%Preflight);

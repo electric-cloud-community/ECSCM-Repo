@@ -1,4 +1,12 @@
 <editor>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#CheckoutCode</help>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration:</label>
+        <property>config</property>
+        <documentation>The SCM configuration so use.</documentation>
+        <required>1</required>
+    </formElement>
     <formElement>
         <type>checkbox</type>
 		<checkedValue>1</checkedValue>
