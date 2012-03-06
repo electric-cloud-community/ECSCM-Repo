@@ -53,6 +53,13 @@ ntest "configuration_crud", {}, sub {
     assertEq("Required", $sel->getText("id=scmCreatefb_6_2"));
     assertEq("Manifest:", $sel->getText("id=scmCreatefb_8_0"));
     assertEq("manifest.xml", $sel->getValue("id=scmCreatefb_8_1"));
+    assertEq("User Email:", $sel->getText("id=scmCreatefb_12_0"));
+    assertEq("", $sel->getValue("id=scmCreatefb_12_1"));
+    assertEq("User Name:", $sel->getText("id=scmCreatefb_14_0"));
+    assertEq("", $sel->getValue("id=scmCreatefb_14_1"));
+    assertEq("Path to repo:", $sel->getText("id=scmCreatefb_16_0"));
+    assertEq("", $sel->getValue("id=scmCreatefb_16_1"));
+    
     
     # Submit without required elements
     $sel->click("id=scmCreate-submit");
@@ -73,7 +80,7 @@ ntest "configuration_crud", {}, sub {
     $sel->click("id=scmCreate-submit");
 
     # Wait for the list to show up again
-     $sel->waitForPageToLoad("30000");
+     $sel->waitForPageToLoad("50000");
      $sel->waitForVisible("id=scmList-table");
      assertEq($testConfig, $sel->getText("id=scmList_1_0"));
      assertEq("$type configuration", $sel->getText("id=scmList_1_1"));

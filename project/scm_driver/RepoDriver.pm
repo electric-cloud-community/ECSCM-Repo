@@ -16,6 +16,8 @@ use Getopt::Long;
 use Cwd;
 use HTTP::Date(qw {str2time time2str time2iso time2isoz});
 
+$|=1;
+
 if (!defined ECSCM::Base::Driver) {
     require ECSCM::Base::Driver;
 }
@@ -77,8 +79,12 @@ sub isImplemented {
 #------------------------------------------------------------------------------
 sub repo
 {
-    my ($self,$command, $options) = @_;
-    my $repoCommand = "repo $command";        
+    my ($self, $opts, $command, $options) = @_;
+    my $repoCommand = "repo ";
+    if (defined($opts->{scm_repoPath}) && $opts->{scm_repoPath} ne ""){
+        $repoCommand = qq{"$opts->{scm_repoPath}" };
+    }
+    $repoCommand .= "$command";        
 	if ($options eq '') {
 	  $options = {LogCommand => 1, LogResult => 0}; 
 	}
@@ -116,19 +122,31 @@ sub repo_setup
 {
     my ($self, $opts) = @_;   
     my $repoAgentPath = $opts->{RepoAgentPath};
-        
+    
+    print join("\n","Reading options",
+                    qq{Storing parameter "RepoAgentPath" with value: $repoAgentPath},
+                    qq{Storing parameter "repo_working_dir" with value: $opts->{repo_working_dir}},
+                    qq{Storing parameter "WorkDir" with value: $opts->{dest}},
+                    qq{Storing parameter "RepoProjectList" with value: $opts->{RepoProjectList}},) . "\n";
+    
+    if($opts->{dest} eq "" && $repoAgentPath eq 0){
+        warn "You need to provide a valid destination or a repo_agent_path\n";
+        exit(1);
+    }
+    
     if ($repoAgentPath eq 0) {
         if (!defined $opts->{dest} ) {                
             print "No destination argument\n";
             return undef;            
-        } else {            
+        } elsif(!-d $opts->{dest}){
             if (!mkdir $opts->{dest}, 0777 ) {
                 print "can't mkdir $opts->{dest}: $!\n";
                 exit(1);
             }
-            return "$opts->{dest}";            
         }
-    } else {
+        return "$opts->{dest}";            
+    }
+    else {
         if (defined $opts->{repo_working_dir}){        
             if (!-d "$opts->{repo_working_dir}"){
                 if (!mkdir $opts->{repo_working_dir}, 0777 ) {
@@ -137,7 +155,9 @@ sub repo_setup
                 }
             }
             return "$opts->{repo_working_dir}";            
-        } else {
+        } elsif($opts->{dest} ne "") {
+            return $opts->{dest};
+        }else{
             print "No repo work dir specified, check the resource properties.\n";
         }
     } 
@@ -178,7 +198,11 @@ sub getSCMTag {
         $opts->{repo_working_dir} = $xpath->findvalue('//value')->string_value;                  
     }
         
-    my $repo_dir = $self->repo_setup($opts);     
+    my $repo_dir = $self->repo_setup($opts);
+    if($repo_dir eq ""){
+       $repo_dir = cwd; 
+    }
+    print "Changing to $repo_dir\n";
     chdir ($repo_dir);  
     
         
@@ -189,11 +213,12 @@ sub getSCMTag {
     # Execute the checkout command 
     if ($repo_dir ne "") {
        print "Checking out code...\n";
-       #$self->checkoutCode($opts);
+       $self->checkoutCode($opts);
     }    
     
     $repoBranch = 'master' unless ($RepoBranch eq "");
-    $output = $self->repo(" forall -c \"git log -1 --pretty=format:%H@%ct%n $repoBranch --\"");
+    #$output = $self->repo(" forall -c \"git log -1 --pretty=format:%H@%ct%n $repoBranch --\"");
+    $output = $self->repo($opts," forall -c \"git log -1 --pretty=format:%H@%ct%n --\"");
     
     my @out = split(/\n/, $output);
     
@@ -240,7 +265,7 @@ sub checkoutCode
     my %row = $self->getCfg()->getRow($name);
     foreach my $k (keys %row) {
             $opts->{$k}=$row{$k};
-    }    
+    }
                                     
     my ($success, $xpath, $msg) = $self->InvokeCommander( { SuppressLog => 1, IgnoreError => 1 },
                                     'getProperty', "/myResource/repo_working_dir");
@@ -251,45 +276,49 @@ sub checkoutCode
     my $repo_dir = $self->repo_setup($opts);     
     $opts->{RepoDir} = $repo_dir;
     
+    print "Changing to $repo_dir\n";
     chdir($repo_dir);    
     
     my $RepoBranch = $opts->{RepoBranch};
     my $repoManifest = $opts->{RepoManifest};
     my $repoMirror = $opts->{RepoMirror};
     my $repoURL = $opts->{RepoUrl};
+    my $projects = $opts->{RepoProjectList};
     
     if ($self->test_repo == 0) {
+        #set git global configuration if required
+        $self->setUserInfo($opts);
         my $command ="init -u $repoURL";
         
         $command .= " -m \"$repoManifest\" " unless ($repoManifest eq "");
         $command .= " -b \"$RepoBranch\" " unless ($RepoBranch eq "");
         $command .= " --mirror " unless ($repoMirror == 0);    
-        $command .= " 2>&1";
+        #$command .= " 2>&1";
         
-        my $output = $self->repo($command);
-        
-        if ($output =~ m/repo initialized in/){            
-            $command = " sync 2>&1";
-            $output = $self->repo($command);    
+        my $output = $self->repo($opts,$command);
+                      
+        if ($output =~ m/repo initialized in/ || $output =~ m/repo mirror initialized in/){            
+            #$command = " sync 2>&1";
+            $command = " sync $projects";
+            $output = $self->repo($opts,$command);    
         }else {
             exit(1);
         }                         
     } else {        
         $RepoBranch = 'm/'.$RepoBranch unless ($RepoBranch eq "");
-        $output = $self->repo(" forall -c \"git reset --hard $RepoBranch\"", 
+        $output = $self->repo($opts," forall -c \"git reset --hard $RepoBranch\"", 
 		 {LogCommand => 1, LogResult => 0, IgnoreError => 1});		
-        $output = $self->repo(" forall -c \"git clean -xfd\"");
+        $output = $self->repo($opts," forall -c \"git clean -xfd\"");
         
-        $command = " sync 2>&1";
-        $output = $self->repo($command);
+        $command = " sync $projects";
+        $output = $self->repo($opts,$command);
     } 
 
     my $currTime = time();
-        
     my $now = time2str($currTime);
-                    
-    my $scmKey = "Repo-$now";
-
+    my $key = $opts->{RepoUrl};
+    $key =~ s/\//:/g;
+    my $scmKey = "Repo-$key";
     $changeLogs_since = "";
     $changeLogs_since = $self->getStartForChangeLog($scmKey);
       
@@ -298,9 +327,9 @@ sub checkoutCode
     }    
         
                
-    my $changelog = $self->repo(" forall -c \"git log --since=\"$changeLogs_since\"\"");
+    my $changelog = $self->repo($opts," forall -c \"git log --since=\"$changeLogs_since\"\"");
 	
-	my $snapshot = $self->repo(" forall -c \"git describe --always\""); 
+	my $snapshot = $self->repo($opts," forall -c \"git describe --always\"",{LogCommand => 1, LogResult => 1}); 
         
        
     $self->setPropertiesOnJob($scmKey, $snapshot, $changelog);
@@ -310,8 +339,28 @@ sub checkoutCode
     if (!defined $cmndReturn) { 
         return 0;
     }
-      
+    
     return 1;    
+}
+
+#------------------------------------------------------------------------------
+# setUserInfo
+#
+#       set the global configurations for git with the provided parameters in the scm configurations
+#       e.g.:
+#           git config --global user.email "you@example.com"
+#           git config --global user.name "Your Name"
+#------------------------------------------------------------------------------
+sub setUserInfo{
+    my ($self, $opts) = @_;
+    my $command = "git config --global ";
+    if($opts->{RepoUserEmail} && $opts->{RepoUserEmail} ne ""){
+       $self->RunCommand($command. qq{user.email "$opts->{RepoUserEmail}"},{LogCommand => 1, LogResult => 0});
+    }
+    
+    if($opts->{RepoUserName} && $opts->{RepoUserName} ne ""){
+        $self->RunCommand($command. qq{user.name "$opts->{RepoUserName}"},{LogCommand => 1, LogResult => 0});
+    }
 }
 
 
@@ -413,7 +462,7 @@ sub cpf_copyDeltas()
     $self->cpf_createManifestFiles($opts);
     
 
-    my $output  = $self->RunCommand( "repo status", {LogCommand => 1,IgnoreError=>1});
+    my $output  = $self->repo($opts, "status", {LogCommand => 1,IgnoreError=>1});
     $self->cpf_debug("$output");
     
     my $top = getcwd();
@@ -445,7 +494,7 @@ sub cpf_copyDeltas()
             $action = $1;
             $path = $project.$file;     
            
-            if (($action = 'A-') || ($action = 'M-') ) {           
+            if (($action eq 'A-') || ($action eq 'M-') ) {           
                 my $fpath = $top . "/$path";
                 my $fpath = File::Spec->rel2abs($fpath);               
                 $self->cpf_addDelta($opts,$fpath, "$path");    
@@ -476,7 +525,7 @@ sub cpf_autoCommit()
     my ($self, $opts) = @_;
 
     $self->cpf_display("Committing changes");
-    $self->RunCommand("repo upload", {LogCommand =>1});
+    $self->repo($opts, "upload", {LogCommand =>1});
    
     $self->cpf_display("Changes have been successfully submitted");
 }
@@ -494,11 +543,13 @@ sub cpf_driver
     $::gHelpMessage .= "
   Repo Options: 
   --repoworkdir   <path>      The developer's source directory. 
-  --agentworkdir  <path>      The path to the source directory used by the agent";
+  --agentworkdir  <path>      The path to the source directory used by the agent
+  --repoPath      <path>      The path to the repo executable";
 
     my %ScmOptions = (         
         "repoworkdir=s"             => \$opts->{scm_repoworkdir},    
-        "agentworkdir=s"             => \$opts->{scm_agentworkdir},       
+        "agentworkdir=s"            => \$opts->{scm_agentworkdir},
+        "repoPath=s"                => \$opts->{scm_repoPath},
     );
 
     Getopt::Long::Configure("default");
@@ -513,6 +564,7 @@ sub cpf_driver
 
     $self->extractOption($opts,"scm_repoworkdir", { required => 1, cltOption => "repoworkdir" });  
     $self->extractOption($opts,"scm_agentworkdir", { required => 0, cltOption => "agentworkdir" }); 
+    $self->extractOption($opts,"scm_repoPath", { required => 0, cltOption => "repoPath" }); 
     
     # Copy the deltas to a specific location.
     $self->cpf_copyDeltas($opts);
@@ -568,20 +620,18 @@ sub updateLastGoodAndLastCompleted
         my $snapshot = $properties->{$key}; 
         
         if ("$snapshot" ne "") { 
-    
-        $prop = "/myProcedure/ecscm_snapshots/$key/lastCompleted";
-        $self->InvokeCommander({SuppressLog=>1,IgnoreError=>1}, "setProperty", "$prop", "$snapshot", {jobStepId => $grandParentStepId});
+            $prop = "/myProcedure/ecscm_snapshots/$key/lastCompleted";
+            $self->InvokeCommander({SuppressLog=>1,IgnoreError=>1}, "setProperty", "$prop", "$snapshot", {jobStepId => $grandParentStepId});
 
-        my $val = "";
-        $val = $xpath->findvalue('//value')->value();
+            my $val = "";
+            $val = $xpath->findvalue('//value')->value();
 
-    if ($val eq "success") {
-            $prop = "/myProcedure/ecscm_snapshots/$key/lastGood";
-            $self->InvokeCommander({SuppressLog=>1,IgnoreError=>1}, "setProperty", "$prop", "$snapshot", {jobStepId => $grandParentStepId});            
-        }
-
+            if ($val eq "success") {
+                $prop = "/myProcedure/ecscm_snapshots/$key/lastGood";
+                $self->InvokeCommander({SuppressLog=>1,IgnoreError=>1}, "setProperty", "$prop", "$snapshot", {jobStepId => $grandParentStepId});            
+            }
         } else {
-        # log that we couldn't get the job revision
+            # log that we couldn't get the job revision
         }
     }
 
@@ -590,3 +640,4 @@ sub updateLastGoodAndLastCompleted
     }
 }
 1;
+

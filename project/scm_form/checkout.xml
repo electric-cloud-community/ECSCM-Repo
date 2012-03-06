@@ -33,6 +33,7 @@
         <type>entry</type>
         <label>Project list:</label>
         <property>RepoProjectList</property>
-        <required>0</required>        
+        <required>0</required>
+        <documentation>The list of projects to checkout. e.g. project0 project1 project2.</documentation>          
     </formElement>  	
 </editor>
