@@ -117,7 +117,7 @@
                                         <property>
                                             <propertyName>checkedValue</propertyName>
                                             <expandable>1</expandable>
-                                            <value>true</value>
+                                            <value>1</value>
                                         </property>
                                         <property>
                                             <propertyName>formType</propertyName>
@@ -132,7 +132,7 @@
                                         <property>
                                             <propertyName>uncheckedValue</propertyName>
                                             <expandable>1</expandable>
-                                            <value>false</value>
+                                            <value>0</value>
                                         </property>
                                     </propertySheet>
                                 </property>
@@ -196,7 +196,7 @@
             </formalParameter>
             <formalParameter>
                 <formalParameterName>RepoAgentPath</formalParameterName>
-                <defaultValue>false</defaultValue>
+                <defaultValue>0</defaultValue>
                 <description></description>
                 <required>0</required>
                 <type>checkbox</type>
@@ -313,7 +313,7 @@
                                         <property>
                                             <propertyName>checkedValue</propertyName>
                                             <expandable>1</expandable>
-                                            <value>true</value>
+                                            <value>1</value>
                                         </property>
                                         <property>
                                             <propertyName>formType</propertyName>
@@ -328,7 +328,7 @@
                                         <property>
                                             <propertyName>uncheckedValue</propertyName>
                                             <expandable>1</expandable>
-                                            <value>false</value>
+                                            <value>0</value>
                                         </property>
                                     </propertySheet>
                                 </property>
@@ -441,7 +441,7 @@
             </formalParameter>
             <formalParameter>
                 <formalParameterName>RepoMirror</formalParameterName>
-                <defaultValue>false</defaultValue>
+                <defaultValue>0</defaultValue>
                 <description>download the mirror of the repositories</description>
                 <required>0</required>
                 <type>checkbox</type>
