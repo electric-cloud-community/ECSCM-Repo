@@ -78,16 +78,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>ec_internal</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>commander-util</artifactId>
-      <classifier>tests</classifier>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>commander-util</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>com.google.gwt</groupId>
