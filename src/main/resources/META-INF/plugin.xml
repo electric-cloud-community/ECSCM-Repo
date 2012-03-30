@@ -9,5 +9,19 @@
     <category>Source Code Management</category>
     <commander-version min="3.6"/>
     <depends min="1.0.1">ECSCM</depends>
+	
+	<customTypes>
+	    <customType name="reports">
+          <displayName>Display Repo Changelog Report</displayName>
+          <description></description>
+          <page pageName="RepoReports" definition="pages/reports.xml"/>
+        </customType>
+   </customTypes>
+   <components>
+      <component name="Reports">
+      <javascript>war/ecplugins.ECSCM.Reports/ecplugins.ECSCM.Reports.nocache.js</javascript>
+     </component>
+   </components>
+   
 	<help>@PLUGIN_KEY@_help.xml</help>
 </plugin>
