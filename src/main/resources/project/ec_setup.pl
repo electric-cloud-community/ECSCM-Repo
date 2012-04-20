@@ -26,19 +26,24 @@ if ($promoteAction eq 'promote') {
     }
 }
 
+# Unregister current and past entries first.
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/ECSCM-Repo - Checkout");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/ECSCM-Repo - Preflight");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Repo - Checkout");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Repo - Preflight");
+
 # Data that drives the create step picker registration for this plugin.
-my $scm = "Repo";
 my %checkoutStep = (
-    label       => "@PLUGIN_KEY@ - Checkout",
+    label       => "Repo - Checkout",
     procedure   => "CheckoutCode",
-    description => "Checkout code from $scm.",
+    description => "Checkout code from Repo.",
     category    => "Source Code Management"
 );
 
 my %Preflight = (
-    label => "@PLUGIN_KEY@ - Preflight",
+    label => "Repo - Preflight",
     procedure => "Preflight",
-    description => "Checkout code from $scm. during Preflight",
+    description => "Checkout code from Repo during Preflight",
     category => "Source Code Management"
 );
 @::createStepPickerSteps = (\%checkoutStep, \%Preflight);

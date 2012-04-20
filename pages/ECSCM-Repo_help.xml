@@ -360,6 +360,12 @@
 
         <h1>Release Notes</h1>
 
+        <h2>@PLUGIN_KEY@ 2.1.1</h2>
+
+        <ul>
+            <li>Step chooser name cleanup</li>
+        </ul>
+
         <h2>@PLUGIN_KEY@-2.1.0</h2>
 
         <ul>
