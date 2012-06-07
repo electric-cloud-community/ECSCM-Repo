@@ -67,8 +67,8 @@
       
       <!-- Copies artifacts to the names tests and install expect to find -->
       <plugin>
-        <groupId>com.goldin.plugins</groupId>
-        <artifactId>maven-copy-plugin</artifactId>
+        <groupId>com.github.goldin</groupId>
+        <artifactId>copy-maven-plugin</artifactId>
       </plugin>
 
     </plugins>
