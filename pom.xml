@@ -108,7 +108,7 @@
       <artifactId>annotations</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.octo.gwt.test</groupId>
+      <groupId>com.googlecode.gwt-test-utils</groupId>
       <artifactId>gwt-test-utils</artifactId>
     </dependency>
     <dependency>
