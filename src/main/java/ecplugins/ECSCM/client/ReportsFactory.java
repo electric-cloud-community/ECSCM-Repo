@@ -12,6 +12,7 @@ package ecplugins.ECSCM.client;
 import com.electriccloud.commander.gwt.client.Component;
 import com.electriccloud.commander.gwt.client.ComponentBaseFactory;
 import com.electriccloud.commander.gwt.client.ComponentContext;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This factory is responsible for providing instances of the reports class.
@@ -22,6 +23,7 @@ public class ReportsFactory
 
     //~ Methods ----------------------------------------------------------------
 
+    @NotNull
     @Override public Component createComponent(ComponentContext jso)
     {
         return new Reports();
