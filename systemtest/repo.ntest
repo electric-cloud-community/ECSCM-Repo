@@ -81,7 +81,7 @@ ntest "setup-create configuration", {}, sub {
         $jobId  = $xpath->findvalue("//jobId");
         $status = $xpath->findvalue("//status");
 
-        assertTrue($jobId && int($jobId) > 0,'valid job id');
+        assertTrue($jobId && $jobId ne "",'valid job id');
         assertEq('completed',$status,"job $jobId complete");
 
         #abort if job did not finish
