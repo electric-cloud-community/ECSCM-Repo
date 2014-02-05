@@ -693,7 +693,7 @@
         <procedure>
             <procedureName>Preflight</procedureName>
             <description>Run the agent side of a preflight workflow</description>
-            <jobNameTemplate>pf-$[jobId]</jobNameTemplate>
+            <jobNameTemplate>pf-$[/increment /myJob/project/jobCounter]</jobNameTemplate>
             <resourceName></resourceName>
             <workspaceName></workspaceName> 
             <acl>
