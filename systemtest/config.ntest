@@ -22,7 +22,7 @@ my $rootPage = $configListPage;
 my $sel = setupSelenium();
 $sel->login();
 
-ntest "configuration_crud", {}, sub {
+ntest "configuration_crud", {manual => 1}, sub {
     clearConfigs($N);
 
     $sel->open($rootPage);
