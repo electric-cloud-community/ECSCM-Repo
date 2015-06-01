@@ -365,7 +365,7 @@
         <ul>
             <li>Support for Changelog Reports added for builds triggered through CI schedules. The Changelog report will provide details on the commits made since the last build.</li>
             <li>Support for Preflight Reports added for preflight builds. The Preflight report will provide details on the changes being preflighted by the user.</li>
-            <li>Dependency on version 2.2.9 of the ECSCM plugin added.</li>
+            <li>Dependency on version 2.2.8 of the ECSCM plugin added.</li>
         </ul>
 
         <h2>@PLUGIN_KEY@ 2.1.1</h2>

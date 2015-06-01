@@ -8,7 +8,7 @@
     <authorUrl>http://www.electric-cloud.com/support</authorUrl>
     <category>Source Code Management</category>
     <commander-version min="3.6"/>
-    <depends min="2.2.9">ECSCM</depends>
+    <depends min="2.2.8">ECSCM</depends>
 	
 	<customTypes>
 	    <customType name="reports">
