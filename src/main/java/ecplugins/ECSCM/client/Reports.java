@@ -44,6 +44,7 @@ public class Reports
         /* Renders the component. */
         DecoratorPanel rootPanel = new DecoratorPanel();
         VerticalPanel  vPanel    = new VerticalPanel();
+        //getLog().setLogLevel(Log.LogLevel.DEBUG);
 
         vPanel.setBorderWidth(0);
 
@@ -54,12 +55,12 @@ public class Reports
         // noinspection HardCodedStringLiteral,StringConcatenation
         vPanel.add(new Anchor("Job: " + jobId, urlBuilder.buildString()));
 
-        Widget htmlH1 = new HTML("<h1>Perforce Changelog</h1>");
+        Widget htmlH1 = new HTML("<h1>Repo Changelog</h1>");
 
         vPanel.add(htmlH1);
 
         Widget htmlLabel = new HTML(
-                "<p><b>Perforce changelogs associated with the ElectricCommander job:</b></p>");
+                "<p><b>Repo changelogs associated with the ElectricCommander job:</b></p>");
 
         vPanel.add(htmlLabel);
 
@@ -91,7 +92,7 @@ public class Reports
 
         if (getLog().isDebugEnabled()) {
             getLog().debug(
-                "p4 Reports doInit: setting up getProperties command request");
+                "Reports doInit: setting up getProperties command request");
         }
 
         req.setCallback(new PropertySheetCallback() {
@@ -113,7 +114,7 @@ public class Reports
             });
 
         if (getLog().isDebugEnabled()) {
-            getLog().debug("p4 Reports doInit: Issuing Commander request: "
+            getLog().debug("Reports doInit: Issuing Commander request: "
                     + new RequestSerializerImpl().serialize(req));
         }
 

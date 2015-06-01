@@ -105,7 +105,7 @@ sub test_repo
     
     eval {
         $out = `$command 2>&1`;
-    };     
+    };
     if ($out =~ m/error: repo is not installed.  Use "repo init" to install it here./) {
         return 0;      
     } else {
@@ -213,15 +213,21 @@ sub getSCMTag {
     # Execute the checkout command 
     if ($repo_dir ne "") {
        print "Checking out code...\n";
-       $self->checkoutCode($opts);
+       $self->checkoutCode($opts, "sentry");
     }    
     
     $repoBranch = 'master' unless ($RepoBranch eq "");
     #$output = $self->repo(" forall -c \"git log -1 --pretty=format:%H@%ct%n $repoBranch --\"");
+
+    my $gitlog = $self->repo($opts," forall -c \"git log -1 --pretty=format:%h%x09%an%x09%ad%x09%s%n\"", {LogCommand => 0, LogResult => 0});
+    print "Lastest commits\n";
+    print "----------------------------------\n";
+    print "$gitlog\n";
+    print "----------------------------------\n";
     $output = $self->repo($opts," forall -c \"git log -1 --pretty=format:%H@%ct%n --\"");
-    
+
     my @out = split(/\n/, $output);
-    
+
     my $lastChangeTime = 0;
     my $lastChangeNumber = 0;
     
@@ -258,7 +264,7 @@ sub getSCMTag {
 ####################################################################
 sub checkoutCode
 {
-    my ($self, $opts) = @_;
+    my ($self, $opts, $source) = @_;
 
     # add configuration that is stored for this config
     my $name = $self->getCfg()->getName();
@@ -297,7 +303,7 @@ sub checkoutCode
         
         my $output = $self->repo($opts,$command);
                       
-        if ($output =~ m/repo initialized in/ || $output =~ m/repo mirror initialized in/){            
+        if ($output =~ m/repo initialized in/ || $output =~ m/repo mirror initialized in/ || $output =~ m/has been initialized in/ ){
             #$command = " sync 2>&1";
             $command = " sync $projects";
             $output = $self->repo($opts,$command);    
@@ -319,30 +325,77 @@ sub checkoutCode
     my $key = $opts->{RepoUrl};
     $key =~ s/\//:/g;
     my $scmKey = "Repo-$key";
-    $changeLogs_since = "";
-    $changeLogs_since = $self->getStartForChangeLog($scmKey);
-      
+    my $changeLogs_since = "";
+    my $lastSnapshot = $self->getLastSnapshotId($scmKey);
+    #Get the date when the last SHA contained in the lastSnapshot was submitted
+    #We need this date to generate the change logs for commits since that date.
+    if ($lastSnapshot) {
+        $changeLogs_since = $self->getLatestSHADate($opts, $lastSnapshot);
+    }
     if ($changeLogs_since eq "") {
         $changeLogs_since = $now;
     }    
         
                
-    my $changelog = $self->repo($opts," forall -c \"git log --since=\"$changeLogs_since\"\"");
+    my $changelog = $self->repo($opts," forall -c \"git log --since=\\\"$changeLogs_since\\\" --stat --pretty=fuller\"");
 	
 	my $snapshot = $self->repo($opts," forall -c \"git describe --always\"",{LogCommand => 1, LogResult => 1}); 
         
-       
-    $self->setPropertiesOnJob($scmKey, $snapshot, $changelog);
-      
-    chdir $here;
 
-    if (!defined $cmndReturn) { 
+    $self->setPropertiesOnJob($scmKey, $snapshot, $changelog);
+
+    chdir $here;
+    if (!$source) {
+        print "Repo Commits since $changeLogs_since\n";
+        print "------------------------------------------------------------------\n";
+        print "$changelog\n";
+        print "------------------------------------------------------------------\n";
+        $self->createLinkToChangelogReport("Changelog Report");
+    }
+
+    if (!defined $cmndReturn) {
         return 0;
     }
     
     return 1;    
 }
 
+sub getLatestSHADate {
+    my ($self, $opts, $snapshot) = @_;
+    my @shas = split(/\s/, $snapshot);
+    my $commitDate;
+    my $lastSHATime = 0;
+    foreach $sha (@shas) {
+        my ($currentSHATime, $currentSHADate) = $self->getSHADate($opts, $sha);
+        if($currentSHATime > $lastSHATime) {
+            $lastSHATime = $currentSHATime;
+            $commitDate = $currentSHADate;
+        }
+    }
+    return $commitDate;
+}
+
+sub getSHADate {
+    my ($self, $opts, $sha) = @_;
+    #We have to intentionally ignore error here because the SHA will be found only in one of the projects
+    # and the rest of the git repos will complain because of it.
+    my $output = $self->repo($opts," forall -c \"git show --pretty=format:%H@%ct@%cd%n $sha\"", {LogCommand => 1, LogResult => 0, IgnoreError => 1});
+
+    my $commitTime;
+    my $commitDate;
+    my @out = split(/\n/, $output);
+    foreach (@out) {
+        chomp($_);
+        if($_ =~ m/^(.+)@(\d+)@(.+)$/) {
+            $commitTime = $2;
+            $commitDate =  $3;
+            return ($commitTime, $commitDate);
+        }
+    }
+    #If fell thru, then we did not find the SHA which should not happen reasonably.
+    warn "Error: $sha not found.\nOutput from repo was: $output\n";
+    return ($commitTime, $commitDate);
+}
 #------------------------------------------------------------------------------
 # setUserInfo
 #
@@ -400,7 +453,7 @@ sub apf_createSnapshot
 
     my $jobId = $::ENV{COMMANDER_JOBID};
     
-    my $result = $self->checkoutCode($opts);
+    my $result = $self->checkoutCode($opts, "preflight");
     if (defined $result) {
         print "checked out $result\n";
     }
@@ -430,6 +483,34 @@ sub apf_driver()
     
     $self->apf_deleteFiles($opts);
     $self->apf_overlayDeltas($opts);
+    $self->addPreflightUpdatesToChangelog($opts);
+    $self->createLinkToChangelogReport("Preflight Report");
+}
+
+sub addPreflightUpdatesToChangelog {
+
+    my ($self,$opts) = @_;
+
+    my $preflightUpdates;
+    my $fileName = "ecpreflight_data/deltas";
+    if (-e $fileName && -s $fileName > 0) {
+        my $newOrUpdatedFiles = $self->pf_readFile($fileName);
+        $preflightUpdates = "Added or Modified files:\n" . $newOrUpdatedFiles . "\n\n";
+    }
+
+    $fileName = "ecpreflight_data/deletes";
+    if (-e $fileName && -s $fileName > 0) {
+        my $deletedFiles = $self->pf_readFile($fileName);
+        $preflightUpdates .= "Deleted files:\n" . $deletedFiles . "\n";
+    }
+
+    my $prop = "/myJob/ecscm_changeLogs/Preflight Updates";
+
+    my ($success, $xpath, $msg) = $self->InvokeCommander({SuppressLog=>1,IgnoreError=>1}, "setProperty", $prop, $preflightUpdates);
+    if (!$success) {
+        print "WARNING: Could not set the property $prop to $preflightUpdates\n";
+    }
+
 }
 
 
