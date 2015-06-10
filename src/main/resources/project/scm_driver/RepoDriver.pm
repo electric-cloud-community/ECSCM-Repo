@@ -219,8 +219,8 @@ sub getSCMTag {
     $repoBranch = 'master' unless ($RepoBranch eq "");
     #$output = $self->repo(" forall -c \"git log -1 --pretty=format:%H@%ct%n $repoBranch --\"");
 
-    my $gitlog = $self->repo($opts," forall -c \"git log -1 --pretty=format:%h%x09%an%x09%ad%x09%s%n\"", {LogCommand => 0, LogResult => 0});
-    print "Lastest commits\n";
+    my $gitlog = $self->repo($opts," forall -pc \"git log -1 --pretty=format:%h%x09%an%x09%ad%x09%s%n\"", {LogCommand => 0, LogResult => 0});
+    print "Latest commit in each project\n";
     print "----------------------------------\n";
     print "$gitlog\n";
     print "----------------------------------\n";
@@ -325,28 +325,22 @@ sub checkoutCode
     my $key = $opts->{RepoUrl};
     $key =~ s/\//:/g;
     my $scmKey = "Repo-$key";
-    my $changeLogs_since = "";
-    my $lastSnapshot = $self->getLastSnapshotId($scmKey);
-    #Get the date when the last SHA contained in the lastSnapshot was submitted
-    #We need this date to generate the change logs for commits since that date.
-    if ($lastSnapshot) {
-        $changeLogs_since = $self->getLatestSHADate($opts, $lastSnapshot);
+    my $lastSnapshotsForRepoProjects = $self->getLastSnapshotId($scmKey);
+    my $changelog;
+    my @shas = split(/\s/, $lastSnapshotsForRepoProjects);
+    my $logFormat = "Revision: %H%nAuthor: %an<%ae> on %aD%nCommitter: %cn<%ce> on %cD%n%n %s%n %b%n";
+    foreach $sha (@shas) {
+        #We have to intentionally ignore error here because the SHA will be found only in one of the projects
+        # and the rest of the git repos will complain because of it.
+        $changelog .= $self->repo($opts," forall -pc \"git log --name-status --pretty='format:$logFormat' $sha..HEAD\"", {LogCommand => 1, LogResult => 0, IgnoreError => 1}) . "\n";
     }
-    if ($changeLogs_since eq "") {
-        $changeLogs_since = $now;
-    }    
-        
-               
-    my $changelog = $self->repo($opts," forall -c \"git log --since=\\\"$changeLogs_since\\\" --stat --pretty=fuller\"");
-	
-	my $snapshot = $self->repo($opts," forall -c \"git describe --always\"",{LogCommand => 1, LogResult => 1}); 
-        
 
+	my $snapshot = $self->repo($opts," forall -c \"git describe --always\"",{LogCommand => 1, LogResult => 1});
     $self->setPropertiesOnJob($scmKey, $snapshot, $changelog);
 
     chdir $here;
-    if (!$source) {
-        print "Repo Commits since $changeLogs_since\n";
+    if (!$source && $changelog) {
+        print "Repo Commits since last successful build\n";
         print "------------------------------------------------------------------\n";
         print "$changelog\n";
         print "------------------------------------------------------------------\n";
@@ -360,42 +354,6 @@ sub checkoutCode
     return 1;    
 }
 
-sub getLatestSHADate {
-    my ($self, $opts, $snapshot) = @_;
-    my @shas = split(/\s/, $snapshot);
-    my $commitDate;
-    my $lastSHATime = 0;
-    foreach $sha (@shas) {
-        my ($currentSHATime, $currentSHADate) = $self->getSHADate($opts, $sha);
-        if($currentSHATime > $lastSHATime) {
-            $lastSHATime = $currentSHATime;
-            $commitDate = $currentSHADate;
-        }
-    }
-    return $commitDate;
-}
-
-sub getSHADate {
-    my ($self, $opts, $sha) = @_;
-    #We have to intentionally ignore error here because the SHA will be found only in one of the projects
-    # and the rest of the git repos will complain because of it.
-    my $output = $self->repo($opts," forall -c \"git show --pretty=format:%H@%ct@%cd%n $sha\"", {LogCommand => 1, LogResult => 0, IgnoreError => 1});
-
-    my $commitTime;
-    my $commitDate;
-    my @out = split(/\n/, $output);
-    foreach (@out) {
-        chomp($_);
-        if($_ =~ m/^(.+)@(\d+)@(.+)$/) {
-            $commitTime = $2;
-            $commitDate =  $3;
-            return ($commitTime, $commitDate);
-        }
-    }
-    #If fell thru, then we did not find the SHA which should not happen reasonably.
-    warn "Error: $sha not found.\nOutput from repo was: $output\n";
-    return ($commitTime, $commitDate);
-}
 #------------------------------------------------------------------------------
 # setUserInfo
 #
@@ -416,6 +374,24 @@ sub setUserInfo{
     }
 }
 
+#------------------------------------------------------------------------------
+# getUserInfo
+#
+#       Get the user name and email from the git configuration on the
+#       local system. When used with preflight, will provide the git details of the
+#       user running the preflight.
+#       e.g.:
+#           git config --global user.email "you@example.com"
+#           git config --global user.name "Your Name"
+#------------------------------------------------------------------------------
+sub getUserInfo{
+    my ($self) = @_;
+    my $userName = $self->RunCommand("git config --get user.name",{LogCommand => 0, LogResult => 0});
+    my $userEmail = $self->RunCommand("git config --get user.email",{LogCommand => 0, LogResult => 0});
+    chomp($userName);
+    chomp($userEmail);
+    return $userName . "<" . $userEmail . ">";
+}
 
 #----------------------------------------------------------
 # agent preflight functions
@@ -432,12 +408,14 @@ sub apf_getScmInfo
 {
     my ($self,$opts) = @_;
     my $scmInfo = $self->pf_readFile("ecpreflight_data/scmInfo");
-    $scmInfo =~ m/(.*)\n(.*)\n/;
+    $scmInfo =~ m/(.*)\n(.*)\nPreflightChangelog:(.*)/s;
     $opts->{RepoWorkdir} = $1;
     $opts->{AgentWorkdir} = $2;
+    $opts->{PreflightChangelog} = $3;
     print("Repo information received from client:\n"
             . "RepoWorkdir: $opts->{RepoWorkdir}\n"
-            . "AgentWorkdir: $opts->{AgentWorkdir}\n");
+            . "AgentWorkdir: $opts->{AgentWorkdir}\n"
+            . "PreflightChangelog: $opts->{PreflightChangelog}\n");
 }
 
 #------------------------------------------------------------------------------
@@ -491,18 +469,7 @@ sub addPreflightUpdatesToChangelog {
 
     my ($self,$opts) = @_;
 
-    my $preflightUpdates;
-    my $fileName = "ecpreflight_data/deltas";
-    if (-e $fileName && -s $fileName > 0) {
-        my $newOrUpdatedFiles = $self->pf_readFile($fileName);
-        $preflightUpdates = "Added or Modified files:\n" . $newOrUpdatedFiles . "\n\n";
-    }
-
-    $fileName = "ecpreflight_data/deletes";
-    if (-e $fileName && -s $fileName > 0) {
-        my $deletedFiles = $self->pf_readFile($fileName);
-        $preflightUpdates .= "Deleted files:\n" . $deletedFiles . "\n";
-    }
+    my $preflightUpdates = $opts->{PreflightChangelog};
 
     my $prop = "/myJob/ecscm_changeLogs/Preflight Updates";
 
@@ -535,15 +502,17 @@ sub cpf_copyDeltas()
         $self->cpf_error("Could not change to directory $opts->{scm_repoworkdir}");
     }   
     
-    chdir ($opts->{scm_repoworkdir}) || $self->cpf_error("Could not change to directory $opts->{scm_repoworkdir}");    
+    chdir ($opts->{scm_repoworkdir}) || $self->cpf_error("Could not change to directory $opts->{scm_repoworkdir}");
+    my $output  = $self->repo($opts, "status", {LogCommand => 1,IgnoreError=>1});
+    my $authorInfo  = $self->getUserInfo();
     $self->cpf_saveScmInfo($opts,"$opts->{scm_repoworkdir}\n"
-                           . "$opts->{scm_agentworkdir}\n"); 
+                           . "$opts->{scm_agentworkdir}\n"
+                           . "PreflightChangelog:Author: $authorInfo\n$output\n");
     
     $self->cpf_findTargetDirectory($opts);
     $self->cpf_createManifestFiles($opts);
     
 
-    my $output  = $self->repo($opts, "status", {LogCommand => 1,IgnoreError=>1});
     $self->cpf_debug("$output");
     
     my $top = getcwd();
