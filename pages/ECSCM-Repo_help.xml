@@ -8,7 +8,7 @@
     <meta content="text/html; charset=us-ascii"
           http-equiv="content-type" />
 
-    <title>Electric Commander Plugin for Repo</title>
+    <title>ElectricFlow Plugin for Repo</title>
     <link rel="stylesheet"
           href="../../plugins/@PLUGIN_KEY@/pluginhelp.css"
           type="text/css"
@@ -21,374 +21,61 @@
 
         <p>Plugin Version @PLUGIN_VERSION@</p>
         <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;"
-            noshade="noshade" />
+            noshade="noshade" />						<p>Revised on July 1, 2015</p>							<h1>Contents</h1>								<ul>				<li><p><a href="#overview">Overview</a></p></li>				<li><p><a href="#setupconfig">Setting Up the Plugin Configuration</a></p></li>				<li><p><a href="#procedures">Plugin Procedures</a></p></li>				<ul>				<li><a href="#CheckoutCode">CheckoutCode</a></li>				<li><a href="#getSCMTag">getSCMTag</a></li>				<li><a href="#Preflight (agent side)">Preflight (agent side)</a></li>				<li><a href="#Preflight (client side)">Preflight (client side)</a></li>				<li><a href="#updateLastGoodAndLastCompleted">updateLastGoodAndLastCompleted</a></li>				</ul>				<li><p><a href="#rns">Release Notes</a></p></li>				</ul>				    <p>IMPORTANT: For all parameter descriptions in this document, required parameters are shown in <span class='required'>bold 				italics</span>.</p>						<p>IMPORTANT: In the ElectricFlow UI, go to the Home page, open the Main Menu, and click <b>Admin</b> > <b>Plugins</b> to open the 				Plugin Manager.</p>		<h1 id="overview">Overview</h1>   
 
         <p>Repo is a tool that Google built on top of Git to manage
-        the many Git repositories, do the uploads to revision
-        control system, and automate parts of the Android
-        development workflow. Repo is not meant to replace Git,
-        only to make it easier to work with Git in the context of
-        Android. The repo command is an executable Python script
-        that can be put anywhere in the development system.</p>
+        the many Git repositories, perform uploads to revision
+        control systems, and automate parts of the Android
+        development workflow. Repo does not replace Git. It makes easier				to work with Git in the context of Android. The <b>repo</b> command 				is an executable Python script that can be put anywhere in the development system.</p>
+        <p>For more information about Repo, go to  <a href="https://source.android.com/source/developing.html">		        Git and Repo</a>.</p>
+        <h2>ElectricFlow Integration to Repo</h2>
 
-        <h2>Repo Links</h2>
-
-        <p>More information can be found at
-        <a href="http://source.android.com/source/version-control.html">
-        this website</a>.</p>
-
-        <h2>Electric Commander Integration to Repo</h2>
-
-        <p>allows ElectricCommander to communicate with your Repo,
-        to download Git repositories. This plugin enables you to
-        perform code checkout, preflight actions, and continuous
+        <p>Use this plugin in ElectricFlow to communicate with your Git 				repositories, to download the repositories, to check out code,         perform preflight operations, and implement continuous
         integration.</p>
 
         <h2>Integrated Version</h2>
 
         <p>This plugin was developed and tested against version
         1.7.4.3.</p>
+        <h1 id="setupconfig">Setting Up the Plugin Configuration</h1>        <p>Plugin configurations are sets of parameters that apply across some or all of the plugin procedures. 		    They reduce repetition of common values, create predefined sets of parameters for end users, and store 		    credentials securely. Each configuration has a unique name that is automatically entered in designated 		    parameters in the procedures.</p>								<h2>Input</h2>          <ol>		    <li>In the Main Menu, click <b>Admin</b> > <b>Plugins</b> to open the Plugin Manager.</li>		    <li>Click <b>ECSCM-Repo</b>.</li>			<li>In the CreateConfiguration row, click <b>Run</b>.</li>		    <li>To create a Repo configuration, enter the following information and click <b>OK</b>. 			<br /> Remember that you may need to create additional configurations later.</li>              <table class="grid">            <thead>                <tr>                    <th>Parameter</th>                    <th>Description</th>                </tr>            </thead>            <tbody>                <tr>                    <td class='required'>config										<!-- Configuration Name --></td>                    <td>A unique name for the configuration. (Required)</td>                </tr>                <tr>                    <td>description										<!-- Description --></td>                    <td>Description of the configuration. The default is "Repo configuration".</td>                </tr>                <tr>                    <td>RepoManifest										<!-- Manifest --></td>                    <td>A manifest file in the repository. If no manifest file 										is specified, the default is default.xml.</td>                </tr>				<tr>                    <td>RepoMirror										<!-- Mirror the repositories --></td>                    <td>If this parameter is selected, the plugin creates a mirror of the GIT repositories.</td>                </tr>                				<tr>                    <td class='required'>RepoUrl										<!-- Manifest repository URL --></td>                    <td>URL from which to get the manifest repository. (Required)</td>                </tr>                <tr>                    <td>RepoUserEmail										<!-- Manifest repository URL --></td>                    <td>Email address used to set the <b>git --global</b> <i>user.email</i> option.</td>                </tr>                                <tr>                    <td>RepoUserName										<!-- User Name --></td>                    <td>User Name used to set the <b>git --global</b> <i>user.email</i> option.</td>                </tr>                                <tr>                    <td>scmRepoPath										<!-- User Name --></td>                    <td>Absolute path to the repo executable. By default, the plugin assumes that the repo executable is specified in the system path variable.</td>                </tr>            </tbody>        </table>				        <br />					            <img src="../../plugins/@PLUGIN_KEY@/images/Repo-1.png"  alt="form"/>		       			    <br />						</ol>						<!-- There is no Configure link on the Administration > Plugin Manager page so the following does not apply.							        <h2>Output</h2>	 								    <p>The Repo Configurations page now shows the new configuration.</p>				    <p>You can also manage your Repo configurations in this page. Click <b>Edit</b> to modify an existing configuration or 		    <b>Delete</b> to remove an existing configuration.</p>						-->		
+        <h1 id="procedures">Plugin Procedures</h1>
 
-        <h1>Plugin Procedures</h1>
-
-        <p>IMPORTANT: For all parameter descriptions below,
-        required parameters are shown in
-        <span class='required'>bold italics</span>.</p>
-
-        <h2>Plugin Configuration</h2>
-
-        <p>Plugin configurations are sets of parameters that apply
-        across some or all of the plugin's procedures. They are
-        intended to reduce repetition of common values, create
-        predefined sets of parameters for end users, and to
-        securely store credentials where needed. Each configuration
-        is given a unique name that is entered in designated
-        parameters on procedures that use them.<br />
-         Plugin configurations are created by going to the Electric
-        Commander "Administration" tab, then to the "Plugins"
-        sub-tab. On the right side of the line for the specific
-        plugin, there is a "Configure" link which will open the
-        Configuration page.</p>
-
-        <h3>Plugin Configuration Parameters</h3>
-
-        <table class="grid">
-            <thead>
-                <tr>
-                    <th>Parameter</th>
-
-                    <th>Description</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td class='required'>Configuration Name</td>
-
-                    <td>Provide a unique name for the
-                    configuration. (Required)</td>
-                </tr>
-
-                <tr>
-                    <td>Description</td>
-
-                    <td>A custom description for the
-                    configuration.</td>
-                </tr>
-
-                <tr>
-                    <td class='required'>Manifest repository
-                    URL</td>
-
-                    <td>URL to the manifest repository.
-                    (Required)</td>
-                </tr>
-
-                <tr>
-                    <td>Manifest</td>
-
-                    <td>Select a manifest file within the
-                    repository. If no manifest name is selected,
-                    the default is default.xml</td>
-                </tr>
-
-                <tr>
-                    <td>Mirror the repositories</td>
-
-                    <td>Create a mirror of the repositories.</td>
-                </tr>
-                
-                <tr>
-                    <td>User Email</td>
-                    
-                    <td>Email to set in the git global configuration.</td>
-                </tr>
-                
-                <tr>
-                    <td>User Name</td>
-                    
-                    <td>User Name to set in the git global configuration.</td>
-                </tr>
-                
-                <tr>
-                    <td>Path to repo</td>
-                    
-                    <td>Absolute path to the repo executable. By default the plugin will assume that repo is loaded in the system path variable.</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div id="CheckoutCode">
+            <div id="CheckoutCode">
             <a name='CheckoutCode'
                  id="CheckoutCode"></a> 
 
-            <h3>CheckoutCode</h3>
+            <h2>CheckoutCode</h2>
 
-            <p>The CheckoutCode procedure downloads code from a git
-            repository and place it into a working directory using
+            <p>The CheckoutCode procedure downloads code from a Git 
+            repository and puts it in a working directory using
             the Repo tool.</p>
-
-            <table class="grid">
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-
-                        <th>Description</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td class='required'>Configuration</td>
-
-                        <td>The SCM configuration so use.
-                        (Required)</td>
-                    </tr>
-
-                    <tr>
-                        <td>Use agent path</td>
-
-                        <td>A path defined in custom resource
-                        property of a resource, where the source
-                        tree will be created.</td>
-                    </tr>
-
-                    <tr>
-                        <td>Destination Directory</td>
-
-                        <td>A path relative/absolute, where the source tree will be created.</td>
-                    </tr>
-
-                    <tr>
-                        <td>Branch</td>
-
-                        <td>The Git branch to use.</td>
-                    </tr>
-
-                    <tr>
-                        <td>Project list</td>
-
-                        <td>The list of projects to checkout. e.g. project0 project1 project2.</td>
-                    </tr>
-                </tbody>
-            </table><img src="../../plugins/@PLUGIN_KEY@/images/Repo-2.png"
-                 alt="form" />
-        </div>
-
-        <div id="Preflight (client side)">
-            <a name='Preflight (client side)'
-                 id="Preflight (client side)"></a> 
-
-            <h3>Preflight (client side)</h3>
-
-            <p>This will excecute the client part of the
-            preflight.</p>
-
-            <p>This parameters can be set in the .preflight file,
-            or passed directly to the ecclientpreflight tool.</p>
-
-            <h3>Preflight parameters</h3>
-
-            <table class="grid">
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-
-                        <th>Description</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td>repoworkdir</td>
-
-                        <td>The developer's source directory.</td>
-                    </tr>
-
-                    <tr>
-                        <td>agentworkdir</td>
-
-                        <td>The path to the source directory used
-                        by the agent.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="Preflight (agent side)">
-            <a name='Preflight (agent side)'
-                 id="Preflight (agent side)"></a> 
-
-            <h3>Preflight (agent side)</h3>
-
-            <p>This will excecute the agent side part of the
-            preflight.</p>
-
-            <table class="grid">
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-
-                        <th>Description</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td class='required'>Configuration</td>
-
-                        <td>The SCM configuration so use.
-                        (Required)</td>
-                    </tr>
-
-                    <tr>
-                        <td>Destination Directory</td>
-
-                        <td>A path relative to the job's workspace,
-                        where the source tree will be created.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="getSCMTag">
-            <a name='getSCMTag'
-                 id="getSCMTag"></a> 
-
-            <h3>getSCMTag</h3>
-
-            <p>This procedure is used for Continuous Integration.
-            This will monitor the repository to discover whether
-            something changed, and trigger a pre-configured
-            procedure.</p>
-
-            <table class="grid">
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-
-                        <th>Description</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td>Branch</td>
-
-                        <td>The git branch to watch</td>
-                    </tr>
-
-                    <tr>
-                        <td>Use repo agent path</td>
-
-                        <td>Use repo agent path this avoids
-                        downloading the whole source code
-                        tree.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>WorkDir</td>
-                        
-                        <td>The working directory to monitor.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Project list</td>
-                        
-                        <td>The list of projects to include in the sentry. e.g. project0 project1 project2.</td>
-                    </tr>
-
-                    <tr>
-                        <td>Quiet time minutes</td>
-
-                        <td>The number of minutes of no check-in
-                        activity required before launching the
-                        procedure.</td>
-                    </tr>
-
-                    <tr>
-                        <td>Enabled for ElectricSentry</td>
-
-                        <td>Enable this schedule for
-                        ElectricSentry</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <h1>Examples and Use Cases</h1>
-
-        <h2>Creating a
-        configuration</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-1.png"
-             alt="configuration" /> 
-
-        <h2>Configure a
-        checkout</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-2.png"
-             alt="checkout" /> 
-
-        <h2>Checkout
-        log</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-3.png"
-             alt="log" /> 
-
-        <h2>
-        Preflightt</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-4.png"
-             alt="Preflightt" /> 
-
-        <h2>
-        Sentry</h2><img src="../../plugins/@PLUGIN_KEY@/images/Repo-5.png"
-             alt="Sentry" /> 
-
-        <h1>Release Notes</h1>
-
+            <h3>Input</h3>            <ol>				<li>In the Main Menu, click <b>Admin</b> > <b>Plugins</b> to open the Plugin Manager.</li>			    <li>Go to the CheckoutCode procedure.</li>			    <li>Enter the following parameters:<br />						            <table class="grid">                <thead>                    <tr>                        <th>Parameter</th>                        <th>Description</th>                    </tr>                </thead>                <tbody>                    <tr>                        <td class='required'>Configuration</td>                        <td>The SCM configuration to  use. The default configuration												is <i>default</i>. (Required)</td>                    </tr>                    <tr>                        <td>Use agent path</td>                        <td>When this parameter is selected with the <b>Destination										    Directory</b> parameter, the path to the source tree is defined 												in the custom resource property of a resource.												</td>                    </tr>                    <tr>                        <td>Destination Directory</td>                        <td>The relative or absolute path where the source tree is created.</td>                    </tr>                    <tr>                        <td>Branch</td>                        <td>The Git branch to use.</td>                    </tr>                    <tr>                        <td>Project list</td>                        <td>The list of projects to check out, such as <i>project0 project1 project2</i>.</td>                    </tr>                </tbody>            </table>     		 	</li>								        <br />					            <img src="../../plugins/@PLUGIN_KEY@/images/Repo-2.png" alt="form" />		        <br />		        </ol>
+            <h3>Output</h3>								        <p>After the job runs, you can view the results on the Job Details page in ElectricFlow. 								The code from the Git repository was successfully downloaded.</p>		       				        <p>In the <b>CheckoutCode</b> step, click the Log button to see the diagnostic information.</p>
+        </div>		        <div id="getSCMTag">            <a name='getSCMTag'                 id="getSCMTag"></a>             <h2>getSCMTag</h2>            <p>This procedure is used for Continuous Integration.            It monitors the repository to discover if             something changed, which triggers a pre-configured            procedure.</p>            <h3>Input</h3>            <ol>				<li>In the Main Menu, click <b>Admin</b> > <b>Plugins</b> to open the Plugin Manager.</li>			    <li>Go to the getSCMTag procedure.</li>			    <li>Enter the following parameters:<br />						            <table class="grid">                <thead>								    <tr>                        <th>Parameter</th>                        <th>Description</th>                    </tr>                </thead>                <tbody>								    <tr>                        <td class='required'>config</td>                        <td>Name of the Git configuration. The default name is <i>default</i>.</td>                    </tr>										<tr>                        <td class='required'>dest</td>                        <td>The working directory to monitor.</td>                    </tr>										<tr>                        <td class='required'>RepoAgentPath</td>                        <td>When this parameter is selected, only the branch specified 												in the <b>RepoBranch</b> field is downloaded, not the entire 												source code tree.</td>                    </tr>                    <tr>                        <td>RepoBranch</td>                        <td>The Git branch to monitor. The default branch is <i>default</i>.</td>                    </tr>                    <tr>                        <td>RepoProjectList</td>                       <td>The list of projects to include in the sentry, such as 					   					   <i>project0 project1 project2</i>.</td>                    </tr>                             </tbody>            </table>     		 	</li>								        <br />					            <img src="../../plugins/@PLUGIN_KEY@/images/Repo-3.png" alt="form" />		        <br />		        </ol>            <h3>Output</h3>								        <p>After the job runs, you can view the results on the Job Details page in ElectricFlow. 								It shows that the results of monitoring the repository.</p>		       				        <p>In the <b>getSCMTag</b> step, click the Log button to see the diagnostic information.</p>					</div>
+        <div id="Preflight (agent side)">            <a name='Preflight (agent side)'                 id="Preflight (agent side)"></a>             <h2>Preflight (agent side)</h2>            <p>This plugin runs the agent side part of a             preflight workflow.</p>            <h3>Input</h3>            <ol>				<li>In the Main Menu, click <b>Admin</b> > <b>Plugins</b> to open the Plugin Manager.</li>			    <li>Go to the Preflight procedure.</li>			    <li>Enter the following parameters:<br /></li>						             <table class="grid">                <thead>                    <tr>                        <th>Parameter</th>                        <th>Description</th>                    </tr>                </thead>                <tbody>                    <tr>                        <td class='required'>Configuration</td>                        <td>Name of the SCM configuration to use.                        (Required)</td>                    </tr>                    <tr>                        <td>Destination Directory</td>                        <td>A path relative to the job workspace,                        where the source tree will be created.</td>                    </tr>                </tbody>            </table>						<br />					            <img src="../../plugins/@PLUGIN_KEY@/images/Repo-4.png" alt="form" />		        <br />		        </ol>            <h3>Output</h3>								        <p>After the job runs, you can view the results on the Job Details page in ElectricFlow. 								The preflight workflow was successfully completed.</p>		       				        <p>In the <b>Preflight</b> step, click the Log button to see the diagnostic information.</p>        </div>        				<div id="Preflight (client side)">            <a name='Preflight (client side)'                 id="Preflight (client side)"></a>             <h2>Preflight (client side)</h2>            <p>This will execute the client part of the            preflight.</p>            <p>This parameters can be set in the .preflight file,            or passed directly to the ecclientpreflight tool.</p>            <h3>Preflight parameters</h3>            <table class="grid">                <thead>                    <tr>                        <th>Parameter</th>                        <th>Description</th>                    </tr>                </thead>                <tbody>                    <tr>                        <td>repoworkdir</td>                        <td>The developer's source directory.</td>                    </tr>                    <tr>                        <td>agentworkdir</td>                        <td>The path to the source directory used                        by the agent.</td>                    </tr>                </tbody>            </table>     		 	<!-- </li>								        <br />					            <img src="../../plugins/@PLUGIN_KEY@/images/Repo-5.png" alt="form" />		        <br /> -->        </div>
+        <div id="updateLastGoodAndLastCompleted">            <a name='updateLastGoodAndLastCompleted'                 id="updateLastGoodAndLastCompleted"></a>             <h2>updateLastGoodAndLastCompleted</h2>            <p>This plugin runs the agent side part of a             preflight workflow.</p>            <h3>Input</h3>            <ol>				<li>In the Main Menu, click <b>Admin</b> > <b>Plugins</b> to open the Plugin Manager.</li>			    <li>Go to the updateLastGoodAndLastCompleted procedure.</li>			    <li>Enter the following parameters:<br /></li>						             <table class="grid">                <thead>                    <tr>                        <th>Parameter</th>                        <th>Description</th>                    </tr>                </thead>                <tbody>                    <tr>                        <td class='required'>config</td>                        <td>Name of the SCM configuration to use. The default configuration is <i>default</i>.                        (Required)</td>                    </tr>                </tbody>            </table>						<br />					            <img src="../../plugins/@PLUGIN_KEY@/images/Repo-5.png" alt="form" />		        <br />		        </ol>            <h3>Output</h3>								        <p>After the job runs, you can view the results on the Job Details page in ElectricFlow. 								If the job outcome is successful, ElectricFlow updates the "last successful snapshot" property								to the revision used in the job.</p>		       				        <p>In the <b>updateLastGoodAndLastCompleted</b> step, click the Log button to see the diagnostic information.</p>        </div>
+                    <h1 id="rns">Release Notes</h1>
         <h2>@PLUGIN_KEY@ 2.2.0</h2>
-
         <ul>
-            <li>Support for Changelog Reports added for builds triggered through CI schedules. The Changelog report will provide details on the commits made since the last build.</li>
-            <li>Support for Preflight Reports added for preflight builds. The Preflight report will provide details on the changes being preflighted by the user.</li>
-            <li>Dependency on version 2.2.8 of the ECSCM plugin added.</li>
+            <li>Added support for Changelog reports in builds that are triggered through Continous Integration schedules. 						The Changelog reports have details about the commits made since the previous build.</li>
+            <li>Added support for Preflight reports in preflight builds. The Preflight reports 						have details about the user's changes.</li>
+            <li>Added the dependency on ECSCM 2.2.8 plugin.</li>
         </ul>
 
         <h2>@PLUGIN_KEY@ 2.1.1</h2>
-
-
         <ul>
-            <li>Step chooser name cleanup</li>
+            <li>Cleaned up the step selector names.</li>
         </ul>
 
         <h2>@PLUGIN_KEY@-2.1.0</h2>
 
         <ul>
-            <li>New parameter "WorkDir" was added to the sentry.</li>
-
-            <li>The "Destination Directory" parameter is now working as expected.</li>
+            <li>Added the dest parameter to the getSCMTag procedure. Use this parameter to monitor the 			working directory.</li>						<li>Added the RepoProjectList parameter to the getSCMTag procedure. Use this parameter to include			the list of projects to include in the sentry.</li>
+            <li>The "Destination Directory" parameter is now works as expected.</li>      
+            <li>Fixed some broken regex.</li>
             
-            <li>Some broken regex were fixed.</li>
-            
-            <li>More verbosity was added to the plugin.</li>
-            
-            <li>Three new parameters were added to the configuration (User Email, User Name and Path to repo).</li>
-            
-            <li>New parameter "Project list" was added to the sentry procedure.</li>
+            <li>Added more information about the procedures to the plugin.</li>
+            <li>Added the RepoUserEmail, RepoUserName, and scm_repoPath parameters to the configuration.</li>
         </ul>
         
         <h2>@PLUGIN_KEY@-2.0.0</h2>
@@ -396,18 +83,16 @@
         <ul>
             <li>XML parameter panels.</li>
 
-            <li>Help pages changes</li>
+            <li>Made Help page changes.</li>
         </ul>
 
         <h2>@PLUGIN_KEY@-1.0.0</h2>
 
         <ul>
-            <li>SCM features - Sentry</li>
-
-            <li>SCM features - Checkout</li>
-
-            <li>SCM features - Preflight</li>
+            <li>Added sentry SCM features.</li>
+            <li>Added checkout SCM features.</li>
+            <li>Added preflight SCM features.</li>
         </ul>
-    </div>
+    </div>		 
 </body>
 </html>
