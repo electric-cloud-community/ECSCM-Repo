@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<editor>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#getSCMTag</help>
+    <formElement>
+        <type>entry</type>
+        <label>Branch:</label>
+        <property>RepoBranch</property>
+        <required>1</required>
+        <documentation>The Git branch to watch.</documentation>
+    </formElement>
+	 <formElement>
+        <type>checkbox</type>
+        <label>Use repo agent path:</label>
+        <property>RepoAgentPath</property>
+        <checkedValue>1</checkedValue>
+        <uncheckedValue>0</uncheckedValue>
+        <initiallyChecked>0</initiallyChecked>
+        <documentation>Use repo agent path this avoids downloading the whole source code tree.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>WorkDir:</label>
+        <property>dest</property>
+        <required>0</required>
+        <documentation>The working directory to monitor.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Project list:</label>
+        <property>RepoProjectList</property>
+        <required>0</required>
+        <documentation>The list of projects to include in the sentry. e.g. project0 project1 project2.</documentation>        
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Quiet time minutes:</label>
+        <property>QuietTimeMinutes</property>
+        <documentation>The number of minutes of no check-in activity required before launching the procedure.</documentation>
+    </formElement>
+    <formElement>
+        <type>checkbox</type>
+        <label>Enabled for ElectricSentry:</label>
+        <property>TriggerFlag</property>
+        <checkedValue>2</checkedValue>
+        <uncheckedValue>0</uncheckedValue>
+        <initiallyChecked>1</initiallyChecked>
+        <documentation>Enable this schedule for ElectricSentry.</documentation>
+    </formElement>
+    <formElement>
+        <property>scheduleDisabled</property>
+        <value>1</value>
+    </formElement>
+</editor>

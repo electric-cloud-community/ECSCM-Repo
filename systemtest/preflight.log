@@ -1,0 +1,14 @@
+Storing parameter "config" with value "repo".
+Storing parameter "dest" with value "".
+Getting ECSCM bootstrap code from /myProject/procedure_helpers/bootstrap
+Running boostrap for repo ...
+Loading /plugins/ECSCM-1.1.1.37088/project/scm_driver/ECSCM::Base::Cfg..
+Loading /plugins/ECSCM-1.1.1.37088/project/scm_driver/ECSCM::Base::Driver..
+Waiting to download files...
+Repo information received from client:
+RepoWorkdir: /home/build/repo_plugin/repo_workdir
+AgentWorkdir: /mnt/agent/repo_workdir
+Overlaying file list received from client:
+Moving: "ecpreflight_files/build/a" to "/mnt/agent/repo_workdir/build"
+
+apf_driver returned 2

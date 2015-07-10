@@ -1,0 +1,15 @@
+Storing parameter "RepoAgentPath" with value "true".
+Storing parameter "RepoProjectList" with value "".
+Storing parameter "RepoRevision" with value "local".
+Storing parameter "config" with value "repo".
+Storing parameter "dest" with value "".
+Getting ECSCM bootstrap code from /myProject/procedure_helpers/bootstrap
+Running boostrap for repo ...
+Loading /plugins/ECSCM-1.1.1.37088/project/scm_driver/ECSCM::Base::Cfg..
+Loading /plugins/ECSCM-1.1.1.37088/project/scm_driver/ECSCM::Base::Driver..
+Log Command: repo  forall -c "git reset --hard"
+
+Log Command: repo  forall -c "git clean -xfd"
+Log Command: repo  sync 2>&1
+Log Command: repo  forall -c "git log --since="Thu, 09 Jun 2011 22:46:40 GMT""
+checkoutCode returned 0

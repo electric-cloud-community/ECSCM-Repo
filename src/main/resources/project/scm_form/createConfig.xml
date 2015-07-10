@@ -1,0 +1,58 @@
+<editor>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration Name:</label>
+        <property>config</property>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>textarea</type>
+        <label>Description:</label>
+        <property>description</property>
+        <value>Repo configuration</value>
+    </formElement>
+	<formElement>
+        <type>entry</type>
+        <label>Manifest repository URL:</label>
+        <property>RepoUrl</property>
+        <required>1</required>
+    </formElement>
+	<formElement>
+        <type>entry</type>
+        <label>Manifest:</label>
+        <property>RepoManifest</property>
+		<value>manifest.xml</value>
+        <required>0</required>
+    </formElement>
+	<formElement>
+        <type>checkbox</type>
+		<checkedValue>1</checkedValue>
+		<uncheckedValue>0</uncheckedValue>
+        <label>Mirror the repositories:</label>
+        <property>RepoMirror</property>
+        <required>0</required>
+    </formElement> 
+    <formElement>
+        <type>entry</type>
+        <label>User Email:</label>
+        <property>RepoUserEmail</property>
+		<value></value>
+        <required>0</required>
+    </formElement> 
+    <formElement>
+        <type>entry</type>
+        <label>User Name:</label>
+        <property>RepoUserName</property>
+		<value></value>
+        <required>0</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Path to repo:</label>
+        <property>scm_repoPath</property>
+		<value></value>
+        <documentation>Absolute path to the repo executable. By default the plugin will assume that repo is loaded in the system path variable.</documentation>
+        <required>0</required>
+    </formElement>    
+</editor>
+
