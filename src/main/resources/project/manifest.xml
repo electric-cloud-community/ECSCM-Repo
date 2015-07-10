@@ -1,0 +1,47 @@
+<?xml version='1.0' standalone='yes'?>
+<fileset>
+  <file>
+    <path>scm_driver/RepoCfg.pm</path>
+    <xpath>//property[propertyName=&quot;ECSCM::Repo::Cfg&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>scm_driver/RepoDriver.pm</path>
+    <xpath>//property[propertyName=&quot;ECSCM::Repo::Driver&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>scm_form/checkout.xml</path>
+    <xpath>//property[propertyName=&quot;checkout&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>scm_form/preflight.xml</path>
+    <xpath>//property[propertyName=&quot;preflight&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>scm_form/sentry.xml</path>
+    <xpath>//property[propertyName=&quot;sentry&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>scm_form/trigger.xml</path>
+    <xpath>//property[propertyName=&quot;trigger&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>scm_form/createConfig.xml</path>
+    <xpath>//property[propertyName=&quot;createConfig&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>scm_form/editConfig.xml</path>
+    <xpath>//property[propertyName=&quot;editConfig&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>ec_setup.pl</path>
+    <xpath>//property[propertyName=&quot;ec_setup&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>scm_form/checkout.xml</path>
+    <xpath>//procedure[procedureName=&quot;CheckoutCode&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>scm_form/preflight.xml</path>
+    <xpath>//procedure[procedureName=&quot;Preflight&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>
+  </file>
+</fileset>
