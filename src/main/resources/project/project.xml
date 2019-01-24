@@ -7,6 +7,23 @@
         <workspaceName></workspaceName>
         <propertySheet>
             <property>
+                <propertyName>ec_formXmlCompliant</propertyName>
+                <value>true</value>
+            </property>
+            <property>
+               <propertyName>ec_config</propertyName>
+               <propertySheet>
+                   <property>
+                       <propertyName>configLocation</propertyName>
+                       <value>/plugins/ECSCM/project/scm_cfgs</value>
+                   </property>
+                   <property>
+                       <propertyName>form</propertyName>
+                       <value>$[/projects/@PLUGIN_NAME@/procedures/CreateConfiguration/ec_parameterForm]</value>
+                   </property>
+               </propertySheet>
+            </property>
+            <property>
                 <propertyName>scm_driver</propertyName>
                 <description>Holds SCM integration drivers</description>
                 <propertySheet>
@@ -165,7 +182,7 @@
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
-                                </property>              
+                                </property>
                                 <property>
                                     <propertyName>config</propertyName>
                                     <propertySheet>
@@ -175,7 +192,7 @@
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
-                                </property>                
+                                </property>
                             </propertySheet>
                         </property>
                     </propertySheet>
@@ -291,6 +308,10 @@
                 </aclEntry>
             </acl>
             <propertySheet>
+                <property>
+                     <propertyName>ec_parameterForm</propertyName>
+                     <value></value>
+                 </property>
                 <property>
                     <propertyName>ec_customEditorData</propertyName>
                     <propertySheet>
@@ -529,9 +550,9 @@
             <description>Example of how to use getSCMTag</description>
             <jobNameTemplate></jobNameTemplate>
             <resourceName></resourceName>
-            <workspaceName></workspaceName>      
+            <workspaceName></workspaceName>
             <propertySheet>
-                <property>        
+                <property>
                     <propertyName>ec_customEditorData</propertyName>
                     <propertySheet>
                         <property>
@@ -605,13 +626,13 @@
                             </propertySheet>
                         </property>
                     </propertySheet>
-                </property> 
+                </property>
                 <property>
                     <propertyName>ec_visibility</propertyName>
                     <description></description>
                     <expandable>1</expandable>
                     <value>private</value>
-                </property>        
+                </property>
             </propertySheet>
             <formalParameter>
                 <formalParameterName>config</formalParameterName>
@@ -628,8 +649,8 @@
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
-                <formalParameterName>RepoAgentPath</formalParameterName>        
-                <defaultValue>0</defaultValue>         
+                <formalParameterName>RepoAgentPath</formalParameterName>
+                <defaultValue>0</defaultValue>
                 <required>0</required>
                 <type>checkbox</type>
             </formalParameter>
@@ -675,7 +696,7 @@
                         <value>ECSCM-Repo</value>
                     </property>
                 </actualParameters>
-                <procedureName>getSCMTag</procedureName>        
+                <procedureName>getSCMTag</procedureName>
                 <propertySheet>
                     <property>
                         <propertyName>ec_customEditorData</propertyName>
@@ -695,7 +716,7 @@
             <description>Run the agent side of a preflight workflow</description>
             <jobNameTemplate>pf-$[jobId]</jobNameTemplate>
             <resourceName></resourceName>
-            <workspaceName></workspaceName> 
+            <workspaceName></workspaceName>
             <acl>
                 <aclId>18144</aclId>
                 <inheriting>1</inheriting>
@@ -714,7 +735,7 @@
                     <principalName>Everyone</principalName>
                     <principalType>group</principalType>
                 </aclEntry>
-            </acl>       
+            </acl>
             <propertySheet>
                 <property>
                     <propertyName>ec_customEditorData</propertyName>
@@ -801,7 +822,7 @@
                         <value>ECSCM-Repo</value>
                     </property>
                 </actualParameters>
-                <procedureName>Preflight</procedureName>        
+                <procedureName>Preflight</procedureName>
                 <propertySheet>
                     <property>
                         <propertyName>ec_customEditorData</propertyName>
@@ -898,7 +919,7 @@
                         <value>ECSCM-Repo</value>
                     </property>
                 </actualParameters>
-                <procedureName>updateLastGoodAndLastCompleted</procedureName>        
+                <procedureName>updateLastGoodAndLastCompleted</procedureName>
                 <propertySheet>
                     <property>
                         <propertyName>ec_customEditorData</propertyName>
