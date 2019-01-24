@@ -32,7 +32,7 @@ if (!defined ECSCM::Repo::Cfg) {
 # Inputs
 #    cmdr          previously initialized ElectricCommander handle
 #    name          name of this configuration
-#                 
+#
 ####################################################################
 sub new {
     my $this = shift;
@@ -58,10 +58,10 @@ sub new {
 ####################################################################
 sub isImplemented {
     my ($self, $method) = @_;
-    
-    if ($method eq 'getSCMTag' || 
-        $method eq 'checkoutCode' || 
-        $method eq 'apf_driver' || 
+
+    if ($method eq 'getSCMTag' ||
+        $method eq 'checkoutCode' ||
+        $method eq 'apf_driver' ||
         $method eq 'cpf_driver') {
         return 1;
     } else {
@@ -84,11 +84,11 @@ sub repo
     if (defined($opts->{scm_repoPath}) && $opts->{scm_repoPath} ne ""){
         $repoCommand = qq{"$opts->{scm_repoPath}" };
     }
-    $repoCommand .= "$command";        
+    $repoCommand .= "$command";
 	if ($options eq '') {
-	  $options = {LogCommand => 1, LogResult => 0}; 
+	  $options = {LogCommand => 1, LogResult => 0};
 	}
-    my $out = $self->RunCommand($repoCommand, $options);           
+    my $out = $self->RunCommand($repoCommand, $options);
 	return $out;
 }
 
@@ -99,68 +99,68 @@ sub repo
 #------------------------------------------------------------------------------
 sub test_repo
 {
-    my ($self, $opts) = @_;   
+    my ($self, $opts) = @_;
     my $out = "";
-    my $command = "repo";   
-    
+    my $command = "repo";
+
     eval {
         $out = `$command 2>&1`;
     };
     if ($out =~ m/error: repo is not installed.  Use "repo init" to install it here./) {
-        return 0;      
+        return 0;
     } else {
         return 1;
-    }    
+    }
 }
 
 #------------------------------------------------------------------------------
 # repo_setup
-#     
-#      return the directory 
+#
+#      return the directory
 #------------------------------------------------------------------------------
 sub repo_setup
 {
-    my ($self, $opts) = @_;   
+    my ($self, $opts) = @_;
     my $repoAgentPath = $opts->{RepoAgentPath};
-    
+
     print join("\n","Reading options",
                     qq{Storing parameter "RepoAgentPath" with value: $repoAgentPath},
                     qq{Storing parameter "repo_working_dir" with value: $opts->{repo_working_dir}},
                     qq{Storing parameter "WorkDir" with value: $opts->{dest}},
                     qq{Storing parameter "RepoProjectList" with value: $opts->{RepoProjectList}},) . "\n";
-    
+
     if($opts->{dest} eq "" && $repoAgentPath eq 0){
         warn "You need to provide a valid destination or a repo_agent_path\n";
         exit(1);
     }
-    
+
     if ($repoAgentPath eq 0) {
-        if (!defined $opts->{dest} ) {                
+        if (!defined $opts->{dest} ) {
             print "No destination argument\n";
-            return undef;            
+            return undef;
         } elsif(!-d $opts->{dest}){
             if (!mkdir $opts->{dest}, 0777 ) {
                 print "can't mkdir $opts->{dest}: $!\n";
                 exit(1);
             }
         }
-        return "$opts->{dest}";            
+        return "$opts->{dest}";
     }
     else {
-        if (defined $opts->{repo_working_dir}){        
+        if (defined $opts->{repo_working_dir}){
             if (!-d "$opts->{repo_working_dir}"){
                 if (!mkdir $opts->{repo_working_dir}, 0777 ) {
                     print "can't mkdir $opts->{repo_working_dir}: $!\n";
                     exit(1);
                 }
             }
-            return "$opts->{repo_working_dir}";            
+            return "$opts->{repo_working_dir}";
         } elsif($opts->{dest} ne "") {
             return $opts->{dest};
         }else{
             print "No repo work dir specified, check the resource properties.\n";
         }
-    } 
+    }
 }
 
 
@@ -172,13 +172,13 @@ sub repo_setup
 
 ####################################################################
 # getSCMTag
-# 
+#
 # Get the latest changelist on this branch/client
 #
 # Args:
-# Return: 
+# Return:
 #    changeNumber - a string representing the last change sequence #
-#    changeTime   - a time stamp representing the time of last change     
+#    changeTime   - a time stamp representing the time of last change
 ####################################################################
 sub getSCMTag {
     my ($self, $opts) = @_;
@@ -190,32 +190,32 @@ sub getSCMTag {
         $self->debug("Reading $k=$row{$k} from config");
         $opts->{$k}="$row{$k}";
     }
-    
-    my $here = getcwd();    
+
+    my $here = getcwd();
     my ($success, $xpath, $msg) = $self->InvokeCommander( { SuppressLog => 1, IgnoreError => 1 },
                                     'getProperty', "/myResource/repo_working_dir");
     if ($success) {
-        $opts->{repo_working_dir} = $xpath->findvalue('//value')->string_value;                  
+        $opts->{repo_working_dir} = $xpath->findvalue('//value')->string_value;
     }
-        
+
     my $repo_dir = $self->repo_setup($opts);
     if($repo_dir eq ""){
-       $repo_dir = cwd; 
+       $repo_dir = cwd;
     }
     print "Changing to $repo_dir\n";
-    chdir ($repo_dir);  
-    
-        
-    my $repoBranch = $opts->{RepoBranch};    
+    chdir ($repo_dir);
+
+
+    my $repoBranch = $opts->{RepoBranch};
     my $repoMirror = $opts->{RepoMirror};
     my $repoURL = $opts->{RepoUrl};
-       
-    # Execute the checkout command 
+
+    # Execute the checkout command
     if ($repo_dir ne "") {
        print "Checking out code...\n";
        $self->checkoutCode($opts, "sentry");
-    }    
-    
+    }
+
     $repoBranch = 'master' unless ($RepoBranch eq "");
     #$output = $self->repo(" forall -c \"git log -1 --pretty=format:%H@%ct%n $repoBranch --\"");
 
@@ -230,20 +230,20 @@ sub getSCMTag {
 
     my $lastChangeTime = 0;
     my $lastChangeNumber = 0;
-    
+
     foreach (@out) {
         chomp($_);
         $_ =~ m/^(.+)@(\d+)$/;
         my $changeNumber = $1;
         my $changeTime =  $2;
-        
+
         if($changeTime > $lastChangeTime) {
                     $lastChangeTime = $changeTime;
                     $lastChangeNumber = $changeNumber;
-        }        
+        }
     }
-    
-    return ($lastChangeNumber, $lastChangeTime);    
+
+    return ($lastChangeNumber, $lastChangeTime);
 }
 
 ####################################################################
@@ -251,8 +251,8 @@ sub getSCMTag {
 #
 # Results:
 #   Uses the "repo sync" command to checkout code to the workspace.
-#   If the user already has the repository defined in a custom 
-#   resource agent, we only update the code. 
+#   If the user already has the repository defined in a custom
+#   resource agent, we only update the code.
 #   Collects data to call functions to set up the scm change log.
 #
 # Arguments:
@@ -272,53 +272,53 @@ sub checkoutCode
     foreach my $k (keys %row) {
             $opts->{$k}=$row{$k};
     }
-                                    
+
     my ($success, $xpath, $msg) = $self->InvokeCommander( { SuppressLog => 1, IgnoreError => 1 },
                                     'getProperty', "/myResource/repo_working_dir");
     if ($success) {
-        $opts->{repo_working_dir} = $xpath->findvalue('//value')->string_value;             
-    }                 
-    my $here = getcwd();    
-    my $repo_dir = $self->repo_setup($opts);     
+        $opts->{repo_working_dir} = $xpath->findvalue('//value')->string_value;
+    }
+    my $here = getcwd();
+    my $repo_dir = $self->repo_setup($opts);
     $opts->{RepoDir} = $repo_dir;
-    
+
     print "Changing to $repo_dir\n";
-    chdir($repo_dir);    
-    
+    chdir($repo_dir);
+
     my $RepoBranch = $opts->{RepoBranch};
     my $repoManifest = $opts->{RepoManifest};
     my $repoMirror = $opts->{RepoMirror};
     my $repoURL = $opts->{RepoUrl};
     my $projects = $opts->{RepoProjectList};
-    
+
     if ($self->test_repo == 0) {
         #set git global configuration if required
         $self->setUserInfo($opts);
         my $command ="init -u $repoURL";
-        
+
         $command .= " -m \"$repoManifest\" " unless ($repoManifest eq "");
         $command .= " -b \"$RepoBranch\" " unless ($RepoBranch eq "");
-        $command .= " --mirror " unless ($repoMirror == 0);    
+        $command .= " --mirror " unless ($repoMirror == 0);
         #$command .= " 2>&1";
-        
+
         my $output = $self->repo($opts,$command);
-                      
+
         if ($output =~ m/repo initialized in/ || $output =~ m/repo mirror initialized in/ || $output =~ m/has been initialized in/ ){
             #$command = " sync 2>&1";
             $command = " sync $projects";
-            $output = $self->repo($opts,$command);    
+            $output = $self->repo($opts,$command);
         }else {
             exit(1);
-        }                         
-    } else {        
+        }
+    } else {
         $RepoBranch = 'm/'.$RepoBranch unless ($RepoBranch eq "");
-        $output = $self->repo($opts," forall -c \"git reset --hard $RepoBranch\"", 
-		 {LogCommand => 1, LogResult => 0, IgnoreError => 1});		
+        $output = $self->repo($opts," forall -c \"git reset --hard $RepoBranch\"",
+		 {LogCommand => 1, LogResult => 0, IgnoreError => 1});
         $output = $self->repo($opts," forall -c \"git clean -xfd\"");
-        
+
         $command = " sync $projects";
         $output = $self->repo($opts,$command);
-    } 
+    }
 
     my $currTime = time();
     my $now = time2str($currTime);
@@ -350,8 +350,8 @@ sub checkoutCode
     if (!defined $cmndReturn) {
         return 0;
     }
-    
-    return 1;    
+
+    return 1;
 }
 
 #------------------------------------------------------------------------------
@@ -368,7 +368,7 @@ sub setUserInfo{
     if($opts->{RepoUserEmail} && $opts->{RepoUserEmail} ne ""){
        $self->RunCommand($command. qq{user.email "$opts->{RepoUserEmail}"},{LogCommand => 1, LogResult => 0});
     }
-    
+
     if($opts->{RepoUserName} && $opts->{RepoUserName} ne ""){
         $self->RunCommand($command. qq{user.name "$opts->{RepoUserName}"},{LogCommand => 1, LogResult => 0});
     }
@@ -430,7 +430,7 @@ sub apf_createSnapshot
     my ($self,$opts) = @_;
 
     my $jobId = $::ENV{COMMANDER_JOBID};
-    
+
     my $result = $self->checkoutCode($opts, "preflight");
     if (defined $result) {
         print "checked out $result\n";
@@ -444,21 +444,21 @@ sub apf_createSnapshot
 #------------------------------------------------------------------------------
 
 sub apf_driver()
-{  
-    my ($self,$opts) = @_;    
-    
+{
+    my ($self,$opts) = @_;
+
     if ($opts->{test}) { $self->setTestMode(1); }
-    
+
     $opts->{delta} = 'ecpreflight_files';
 
     $self->apf_downloadFiles($opts);
     $self->apf_transmitTargetInfo($opts);
     $self->apf_getScmInfo($opts);
     $self->apf_createSnapshot($opts);
-        
-    my $dir = File::Spec->catdir($opts->{AgentWorkdir});     
-    $opts->{dest} = $dir; 
-    
+
+    my $dir = File::Spec->catdir($opts->{AgentWorkdir});
+    $opts->{dest} = $dir;
+
     $self->apf_deleteFiles($opts);
     $self->apf_overlayDeltas($opts);
     $self->addPreflightUpdatesToChangelog($opts);
@@ -496,64 +496,64 @@ sub cpf_copyDeltas()
 {
     my ($self, $opts) = @_;
     $self->cpf_display("Collecting delta information");
-         
+
     # change to the repo dir
     if (!defined($opts->{scm_repoworkdir}) ||  "$opts->{scm_repoworkdir}" eq "") {
         $self->cpf_error("Could not change to directory $opts->{scm_repoworkdir}");
-    }   
-    
+    }
+
     chdir ($opts->{scm_repoworkdir}) || $self->cpf_error("Could not change to directory $opts->{scm_repoworkdir}");
     my $output  = $self->repo($opts, "status", {LogCommand => 1,IgnoreError=>1});
     my $authorInfo  = $self->getUserInfo();
     $self->cpf_saveScmInfo($opts,"$opts->{scm_repoworkdir}\n"
                            . "$opts->{scm_agentworkdir}\n"
                            . "PreflightChangelog:Author: $authorInfo\n$output\n");
-    
+
     $self->cpf_findTargetDirectory($opts);
     $self->cpf_createManifestFiles($opts);
-    
+
 
     $self->cpf_debug("$output");
-    
+
     my $top = getcwd();
-    my $project, $branch;    
+    my $project, $branch;
     foreach(split(/\n/, $output)) {
         my $line = $_;
-        $line =~ m/project\s(.*)\s*(branch (.*)|\((.*)\))/;        
+        $line =~ m/project\s(.*)\s*(branch (.*)|\((.*)\))/;
         #project name and branch matchers
-        #it´s a No branch project
-        if ($4){  
+        #its a No branch project
+        if ($4){
             $project = $1;
             $project =~ s/^\s+|\s+$//g;
-            $branch = undef; 
-            next;                      
+            $branch = undef;
+            next;
         }
-        #it´s a branch project
+        #its a branch project
         if ($3){
           $project = $1;
           $project =~ s/^\s+|\s+$//g;
-          $branch = $3; 
-          next;                 
-        }        
-        #file and action matchers        
+          $branch = $3;
+          next;
+        }
+        #file and action matchers
         $line =~ m/\s+(|-|A-|M-|D-|R-|C-|T-|U-)\s+(.*)/;
-        
-        my $file, $action,$path;        
-        if ($1 && $2) {       
+
+        my $file, $action,$path;
+        if ($1 && $2) {
             $file = $2;
             $action = $1;
-            $path = $project.$file;     
-           
-            if (($action eq 'A-') || ($action eq 'M-') ) {           
+            $path = $project.$file;
+
+            if (($action eq 'A-') || ($action eq 'M-') ) {
                 my $fpath = $top . "/$path";
-                my $fpath = File::Spec->rel2abs($fpath);               
-                $self->cpf_addDelta($opts,$fpath, "$path");    
+                my $fpath = File::Spec->rel2abs($fpath);
+                $self->cpf_addDelta($opts,$fpath, "$path");
             } elsif ($action = 'D-'){
                 $self->cpf_addDelete("$path");
-            }           
-        }         
+            }
+        }
     }
-      
+
     $self->cpf_closeManifestFiles($opts);
     $self->cpf_uploadFiles($opts);
 }
@@ -576,7 +576,7 @@ sub cpf_autoCommit()
 
     $self->cpf_display("Committing changes");
     $self->repo($opts, "upload", {LogCommand =>1});
-   
+
     $self->cpf_display("Changes have been successfully submitted");
 }
 
@@ -591,13 +591,13 @@ sub cpf_driver
     $self->cpf_display("Executing Repo actions for ecpreflight");
 
     $::gHelpMessage .= "
-  Repo Options: 
-  --repoworkdir   <path>      The developer's source directory. 
+  Repo Options:
+  --repoworkdir   <path>      The developer's source directory.
   --agentworkdir  <path>      The path to the source directory used by the agent
   --repoPath      <path>      The path to the repo executable";
 
-    my %ScmOptions = (         
-        "repoworkdir=s"             => \$opts->{scm_repoworkdir},    
+    my %ScmOptions = (
+        "repoworkdir=s"             => \$opts->{scm_repoworkdir},
         "agentworkdir=s"            => \$opts->{scm_agentworkdir},
         "repoPath=s"                => \$opts->{scm_repoPath},
     );
@@ -605,17 +605,17 @@ sub cpf_driver
     Getopt::Long::Configure("default");
     if (!GetOptions(%ScmOptions)) {
         error($::gHelpMessage);
-    }    
+    }
 
     if ($::gHelp eq "1") {
         $self->cpf_display($::gHelpMessage);
         return;
-    }    
+    }
 
-    $self->extractOption($opts,"scm_repoworkdir", { required => 1, cltOption => "repoworkdir" });  
-    $self->extractOption($opts,"scm_agentworkdir", { required => 0, cltOption => "agentworkdir" }); 
-    $self->extractOption($opts,"scm_repoPath", { required => 0, cltOption => "repoPath" }); 
-    
+    $self->extractOption($opts,"scm_repoworkdir", { required => 1, cltOption => "repoworkdir" });
+    $self->extractOption($opts,"scm_agentworkdir", { required => 0, cltOption => "agentworkdir" });
+    $self->extractOption($opts,"scm_repoPath", { required => 0, cltOption => "repoPath" });
+
     # Copy the deltas to a specific location.
     $self->cpf_copyDeltas($opts);
 
@@ -658,7 +658,7 @@ sub updateLastGoodAndLastCompleted
 
     my $grandParentStepId = "";
     $grandParentStepId = $self->getGrandParentStepId();
-    
+
     if (!$grandParentStepId || $grandParentStepId eq "") {
         # log that we couldn't get the grand parent step id
         return;
@@ -667,9 +667,9 @@ sub updateLastGoodAndLastCompleted
     my $properties = $self->getPropertyNamesAndValuesFromPropertySheet("/myJob/ecscm_snapshots");
 
     foreach my $key ( keys % {$properties}) {
-        my $snapshot = $properties->{$key}; 
-        
-        if ("$snapshot" ne "") { 
+        my $snapshot = $properties->{$key};
+
+        if ("$snapshot" ne "") {
             $prop = "/myProcedure/ecscm_snapshots/$key/lastCompleted";
             $self->InvokeCommander({SuppressLog=>1,IgnoreError=>1}, "setProperty", "$prop", "$snapshot", {jobStepId => $grandParentStepId});
 
@@ -678,7 +678,7 @@ sub updateLastGoodAndLastCompleted
 
             if ($val eq "success") {
                 $prop = "/myProcedure/ecscm_snapshots/$key/lastGood";
-                $self->InvokeCommander({SuppressLog=>1,IgnoreError=>1}, "setProperty", "$prop", "$snapshot", {jobStepId => $grandParentStepId});            
+                $self->InvokeCommander({SuppressLog=>1,IgnoreError=>1}, "setProperty", "$prop", "$snapshot", {jobStepId => $grandParentStepId});
             }
         } else {
             # log that we couldn't get the job revision
