@@ -1,7 +1,7 @@
 ECSCM-Repo
 ============
 
-The ElectricFlow Repo integration
+The CloudBees Flow Repo integration
 
 ## Compile ##
 
