@@ -1,7 +1,7 @@
 ECSCM-Repo
 ============
 
-The CloudBees Flow Repo integration
+The CloudBees CD Repo integration
 
 ## Compile ##
 

@@ -4,7 +4,7 @@
   <head>
     <meta name="generator" content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org" />
     <meta content="text/html; charset=us-ascii" http-equiv="content-type" />
-    <title>CloudBees Flow Plugin for Repo</title>
+    <title>CloudBees CD Plugin for Repo</title>
     <link rel="stylesheet" href="../../plugins/@PLUGIN_KEY@/pluginhelp.css" type="text/css" media="screen" />
   </head>
   <body>
@@ -12,7 +12,7 @@
       <h1>@PLUGIN_KEY@</h1>
       <p>Plugin version @PLUGIN_VERSION@</p>
 
-      <p>Revised on May 27, 2019</p>
+      <p>Revised on June 9, 2020</p>
       <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
       <h1>Contents</h1>
       <ul>
@@ -57,7 +57,7 @@
       <p>IMPORTANT: For all parameter descriptions in this document, required parameters are shown in <span class="required">bold
 
         italics</span>.</p>
-      <p>IMPORTANT: In the CloudBees Flow UI, from the Home page, open the Main Menu, and click <b>Admin</b> &gt; <b>Plugins</b> to open the
+      <p>IMPORTANT: In the CloudBees CD UI, from the Home page, open the Main Menu, and click <b>Admin</b> &gt; <b>Plugins</b> to open the
 
         Plugin Manager.</p>
       <h1 id="overview">Overview</h1>
@@ -72,8 +72,8 @@
       <p>For more information about Repo, go to  <a href="https://source.android.com/source/developing.html">
 
         Git and Repo</a>.</p>
-      <h2>CloudBees Flow Integration to Repo</h2>
-      <p>Use this plugin in CloudBees Flow to communicate with your Git
+      <h2>CloudBees CD Integration to Repo</h2>
+      <p>Use this plugin in CloudBees CD to communicate with your Git
 
         repositories, to download the repositories, to check out code,
 
@@ -198,7 +198,7 @@
           <br />
         </ol>
         <h3>Output</h3>
-        <p>After the job runs, you can view the results on the Job Details page in CloudBees Flow.
+        <p>After the job runs, you can view the results on the Job Details page in CloudBees CD.
 
                 The code from the Git repository was successfully downloaded.</p>
         <p>In the <b>CheckoutCode</b> step, click the Log button to see the diagnostic information.</p>
@@ -233,7 +233,7 @@
           <br />
         </ol>
         <h3>Output</h3>
-        <p>After the job runs, you can view the results on the Job Details page in CloudBees Flow.
+        <p>After the job runs, you can view the results on the Job Details page in CloudBees CD.
 
                 It shows that the results of monitoring the repository.</p>
         <p>In the <b>getSCMTag</b> step, click the Log button to see the diagnostic information.</p>
@@ -276,7 +276,7 @@
           <br />
         </ol>
         <h3>Output</h3>
-        <p>After the job runs, you can view the results on the Job Details page in CloudBees Flow.
+        <p>After the job runs, you can view the results on the Job Details page in CloudBees CD.
 
                 The preflight workflow was successfully completed.</p>
         <p>In the <b>Preflight</b> step, click the Log button to see the diagnostic information.</p>
@@ -344,14 +344,16 @@
           <br />
         </ol>
         <h3>Output</h3>
-        <p>After the job runs, you can view the results on the Job Details page in CloudBees Flow.
+        <p>After the job runs, you can view the results on the Job Details page in CloudBees CD.
 
-                If the job outcome is successful, CloudBees Flow updates the "last successful snapshot" property
+                If the job outcome is successful, CloudBees CD updates the "last successful snapshot" property
 
                 to the revision used in the job.</p>
         <p>In the <b>updateLastGoodAndLastCompleted</b> step, click the Log button to see the diagnostic information.</p>
       </div>
       <h1 id="rns">Release Notes</h1>
+      <h2 id="2.3.2">@PLUGIN_KEY@ 2.3.2</h2>
+      <p>Renaming from "Flow" to "CD"</p>
       <h2 id="2.3.1">@PLUGIN_KEY@ 2.3.1</h2>
       <p>Renaming from "Electric Cloud" to "CloudBees"</p>
       <h2>@PLUGIN_KEY@ 2.3.0</h2>
